@@ -1,7 +1,6 @@
 {
-  // --------------------------------------------
-  // Python
-  // --------------------------------------------
+  // 自动更新，配置无效，手动在设置中关闭
+  "update.mode": "none",
   // 全局字体大小
   "editor.fontSize": 13,
   // 全局自动换行
@@ -25,18 +24,4 @@
     "--profile",
     "black"
   ],
-  // 搜索排除文件
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/bower_components": true,
-    "dist/": true,
-    "build/": true,
-    "temp/": true,
-    "library/": true,
-    "**/*.anim": true,
-    "**/*.pyc": true,
-    "_*": true,
-    "wandb*": true,
-    "results*": true,
-  },
 }
