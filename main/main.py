@@ -6,7 +6,6 @@ import warnings
 import torch
 import util
 import wandb
-from build_clothes_base import Build_Clothe_BASE
 from build_criterion import Build_Criterion
 from build_optimizer import Build_Optimizer
 from build_scheduler import Build_Scheduler
@@ -38,62 +37,62 @@ def run(config):
     device = torch.device(config.TASK.DEVICE)
     logger("Device is:\t {}".format(device))
 
-    ######################################################################
-    # Data
-    end = time.time()
-    dataset, train_loader, query_loader, gallery_loader = build_dataloader(config)
-    logger("Data loading time:\t {:.3f}".format(time.time() - end))
-
-    ######################################################################
-    # Model
-    reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
-    # logger("Model:\n {}".format(reid_net))
-
-    ######################################################################
-    # Criterion
-    criterion = Build_Criterion(config, dataset.num_train_pids)
-    logger("Criterion:\t {}".format(criterion))
+    # ######################################################################
+    # # Data
+    # end = time.time()
+    # dataset, train_loader, query_loader, gallery_loader = build_dataloader(config)
+    # logger("Data loading time:\t {:.3f}".format(time.time() - end))
 
     # ######################################################################
-    # Optimizer
-    optimizer = Build_Optimizer(config, reid_net).optimizer
-    logger("Optimizer:\t {}".format(optimizer))
+    # # Model
+    # reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
+    # # logger("Model:\n {}".format(reid_net))
 
-    ######################################################################
-    # Scheduler
-    scheduler = Build_Scheduler(config, optimizer).scheduler
-    logger("Scheduler:\t {}".format(scheduler))
+    # ######################################################################
+    # # Criterion
+    # criterion = Build_Criterion(config, dataset.num_train_pids)
+    # logger("Criterion:\t {}".format(criterion))
 
-    ######################################################################
-    # Training & Evaluation
-    # 初始化最佳指标
-    best_epoch, best_mAP, best_rank1 = 0, 0, 0
-    for epoch in range(0, config.OPTIMIZER.TOTAL_TRAIN_EPOCH):
-        meter = train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, logger)
-        logger("Time: {}; Epoch: {}; {}".format(util.time_now(), epoch, meter.get_str()))
-        wandb.log({"Lr": optimizer.param_groups[0]["lr"], **meter.get_dict()})
+    # # ######################################################################
+    # # Optimizer
+    # optimizer = Build_Optimizer(config, reid_net).optimizer
+    # logger("Optimizer:\t {}".format(optimizer))
 
-        if epoch % config.TEST.EVAL_EPOCH == 0 or epoch == config.OPTIMIZER.TOTAL_TRAIN_EPOCH - 1:
-            logger("=====> Start Testing...")
-            end = time.time()
-            mAP, CMC = test(config, reid_net, query_loader, gallery_loader, device, logger)
-            logger("reid time:\t {:.3f}s".format(time.time() - end))
+    # ######################################################################
+    # # Scheduler
+    # scheduler = Build_Scheduler(config, optimizer).scheduler
+    # logger("Scheduler:\t {}".format(scheduler))
 
-            # is_best_rank_flag = CMC[0] >= best_rank1
-            is_best_map_flag = mAP >= best_mAP
-            if is_best_map_flag:
-                best_epoch = epoch
-                best_rank1 = CMC[0]
-                best_mAP = mAP
-                wandb.log({"best_epoch": best_epoch, "best_rank1": best_rank1, "best_mAP": best_mAP})
-                # if epoch > 40:
-                #     util.save_model(model=reid_net, epoch=epoch, path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "models/"))
-            logger("Time: {}; Test on Dataset: {}, \n mAP: {}; \n Rank: {}.".format(util.time_now(), config.DATA.TRAIN_DATASET, mAP, CMC))
-            wandb.log({"test_epoch": epoch, "mAP": mAP, "Rank1": CMC[0]})
+    # ######################################################################
+    # # Training & Evaluation
+    # # 初始化最佳指标
+    # best_epoch, best_mAP, best_rank1 = 0, 0, 0
+    # for epoch in range(0, config.OPTIMIZER.TOTAL_TRAIN_EPOCH):
+    #     meter = train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, logger)
+    #     logger("Time: {}; Epoch: {}; {}".format(util.time_now(), epoch, meter.get_str()))
+    #     wandb.log({"Lr": optimizer.param_groups[0]["lr"], **meter.get_dict()})
 
-    logger("=" * 50)
-    logger("Best model is: epoch: {}, rank1: {:.2f}%, mAP: {:.2f}%.".format(best_epoch, best_rank1 * 100, best_mAP * 100))
-    logger("=" * 50)
+    #     if epoch % config.TEST.EVAL_EPOCH == 0 or epoch == config.OPTIMIZER.TOTAL_TRAIN_EPOCH - 1:
+    #         logger("=====> Start Testing...")
+    #         end = time.time()
+    #         mAP, CMC = test(config, reid_net, query_loader, gallery_loader, device, logger)
+    #         logger("reid time:\t {:.3f}s".format(time.time() - end))
+
+    #         # is_best_rank_flag = CMC[0] >= best_rank1
+    #         is_best_map_flag = mAP >= best_mAP
+    #         if is_best_map_flag:
+    #             best_epoch = epoch
+    #             best_rank1 = CMC[0]
+    #             best_mAP = mAP
+    #             wandb.log({"best_epoch": best_epoch, "best_rank1": best_rank1, "best_mAP": best_mAP})
+    #             # if epoch > 40:
+    #             #     util.save_model(model=reid_net, epoch=epoch, path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "models/"))
+    #         logger("Time: {}; Test on Dataset: {}, \n mAP: {}; \n Rank: {}.".format(util.time_now(), config.DATA.TRAIN_DATASET, mAP, CMC))
+    #         wandb.log({"test_epoch": epoch, "mAP": mAP, "Rank1": CMC[0]})
+
+    # logger("=" * 50)
+    # logger("Best model is: epoch: {}, rank1: {:.2f}%, mAP: {:.2f}%.".format(best_epoch, best_rank1 * 100, best_mAP * 100))
+    # logger("=" * 50)
 
 
 if __name__ == "__main__":
