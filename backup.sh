@@ -8,7 +8,7 @@ git status # 查看状态
 git add . # 添加所有修改
 git commit -m "${VERSION_NAME}" # 提交到本地（替换提交说明）
 # git pull origin main # 拉取远程最新代码
-git push origin main # 推送到远程\
+git push origin main --force # 推送到远程
 echo "✅ 成功：代码已提交并同步到远程分支！"
 
 echo "🎉 所有操作执行完成！"
