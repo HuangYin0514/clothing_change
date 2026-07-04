@@ -39,7 +39,6 @@
 *.gif
 *.mp4
 *.mat
-*.json
 *.pth
 *.log
 *.png

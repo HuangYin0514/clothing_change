@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ltcc",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/Users/drhy/Documents/projects/cloth_changing_person_ReID/main/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config_file",
+                "main/config/method.yml",
+                "TASK.NAME=Mac2Test",
+                "TASK.NOTES=None",
+                "TASK.DEVICE=cpu",
+                "DATA.TRAIN_DATASET=ltcc",
+                "DATA.TRAIN_ROOT=/Users/drhy/Documents/projects/cloth_changing_person_ReID/_dataset_processing/LTCC_concise/rgb/",
+                "OPTIMIZER.TOTAL_TRAIN_EPOCH=1",
+                "TEST.EVAL_EPOCH=1",
+                "MODEL.MODULE=Lucky",
+                "SAVE.OUTPUT_PATH=results/outputs",
+            ]
+        },
+        {
+            "name": "vis_ltcc",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/Users/drhy/Documents/projects/cloth_changing_person_ReID/main/vis_main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--config_file",
+                "main/config/method.yml",
+                "TASK.NAME=vis_ltcc",
+                "TASK.NOTES=None",
+                "TASK.DEVICE=cpu",
+                "MODEL.MODULE=Lucky",
+                "TEST.RESUME_EPOCH=0",
+                "DATA.TRAIN_DATASET=ltcc",
+                "DATA.TRAIN_ROOT=/Users/drhy/Documents/projects/cloth_changing_person_ReID/_dataset_processing/LTCC_concise/",
+                "SAVE.OUTPUT_PATH=results/outputs",
+            ]
+        },
+    ]
+}

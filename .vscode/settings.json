@@ -1,0 +1,42 @@
+{
+  // --------------------------------------------
+  // Python
+  // --------------------------------------------
+  // 全局字体大小
+  "editor.fontSize": 13,
+  // 全局自动换行
+  "editor.wordWrap": "off",
+  // 右侧侧边栏略缩图
+  "editor.minimap.enabled": true,
+  // 全局搜索时忽略文件
+  "search.useIgnoreFiles": false,
+  // 全局保存时自动格式化
+  "editor.formatOnSave": true,
+  // 全局保存时自动整理导入语句
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  // 全局默认格式化器设置
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "black-formatter.args": [
+    "--line-length=170"
+  ],
+  "isort.args": [
+    "--profile",
+    "black"
+  ],
+  // 搜索排除文件
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "dist/": true,
+    "build/": true,
+    "temp/": true,
+    "library/": true,
+    "**/*.anim": true,
+    "**/*.pyc": true,
+    "_*": true,
+    "wandb*": true,
+    "results*": true,
+  },
+}
