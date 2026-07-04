@@ -1,7 +1,7 @@
 ####################################
 # git
 ####################################
-VERSION_NAME="5555"
+VERSION_NAME="initial commit"
 
 
 git status # 查看状态
