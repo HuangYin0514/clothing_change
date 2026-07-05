@@ -90,7 +90,7 @@ def visualization_heatmap(config, reid_net, heatmap_loader, device, logger, *arg
         img, pid, camid, clotheid = data
         img = img.to(device)
         B, C, H, W = img.shape
-        cam = util.GradCAMpp(reid_net, target_layer=reid_net.backbone)
+        cam = util.GradCAMpp(reid_net, target_layer=reid_net.module.backbone)
 
         for b_idx in range(B):
             single_img = img[b_idx : b_idx + 1]
