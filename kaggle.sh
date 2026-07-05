@@ -7,5 +7,5 @@ wandb login c74133df8c2cf575304acf8a99fe03ab74b6fe6a
 # ltcc
 ############################################################
 # Lucky / ltcc  
-python main/main.py --config_file "main/config/method.yml" TASK.NOTES=Debug TASK.NAME=Lucky
+python main/main.py --config_file "main/config/method.yml" TASK.NAME=Lucky
 
