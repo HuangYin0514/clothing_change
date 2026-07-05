@@ -3,7 +3,7 @@ import util
 from tqdm import tqdm
 
 
-def train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, logger):
+def train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, *args, **kwargs):
     scheduler.step(epoch)
     reid_net.train()
     meter = util.MultiItemAverageMeter()

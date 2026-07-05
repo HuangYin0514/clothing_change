@@ -8,12 +8,12 @@ def compute_ap_cmc(index, good_index, junk_index):
     cmc = np.zeros(len(index))
 
     # remove junk_index
-    mask = np.in1d(index, junk_index, invert=True)
+    mask = ~np.isin(index, junk_index)
     index = index[mask]
 
     # find good_index index
     ngood = len(good_index)
-    mask = np.in1d(index, good_index)
+    mask = np.isin(index, good_index)
     rows_good = np.argwhere(mask == True)
     rows_good = rows_good.flatten()
 
@@ -90,6 +90,8 @@ def evaluate_ltcc(distmat, q_pids, g_pids, q_camids, g_camids, q_clothids, g_clo
     else:
         mAP = 0
 
+    mAP = round(mAP * 100, 3)
+    CMC = [round(x * 100, 3) for x in CMC.tolist()]
     return CMC, mAP
 
 

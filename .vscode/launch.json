@@ -14,7 +14,7 @@
                 "TASK.NOTES=None",
                 "TASK.DEVICE=cpu",
                 "DATA.TRAIN_DATASET=ltcc",
-                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/clothing_change/_dataset_processing/LTCC_concise/rgb/",
+                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
                 "OPTIMIZER.TOTAL_TRAIN_EPOCH=1",
                 "TEST.EVAL_EPOCH=1",
                 "MODEL.MODULE=Lucky",
@@ -25,7 +25,7 @@
             "name": "vis_ltcc",
             "type": "debugpy",
             "request": "launch",
-            "program": "/Users/drhy/Documents/projects/cloth_changing_person_ReID/main/vis_main.py",
+            "program": "/Users/huangyin/Desktop/project/clothing_change/main/vis_main.py",
             "console": "integratedTerminal",
             "args": [
                 "--config_file",
@@ -36,7 +36,7 @@
                 "MODEL.MODULE=Lucky",
                 "TEST.RESUME_EPOCH=0",
                 "DATA.TRAIN_DATASET=ltcc",
-                "DATA.TRAIN_ROOT=/Users/drhy/Documents/projects/cloth_changing_person_ReID/_dataset_processing/LTCC_concise/",
+                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
                 "SAVE.OUTPUT_PATH=results/outputs",
             ]
         },

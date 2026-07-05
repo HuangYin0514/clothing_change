@@ -2,9 +2,9 @@ import argparse
 import os
 import time
 import warnings
+from pathlib import Path
 
 import torch
-import torch.utils.data as data
 import util
 from core import visualization
 from data import build_dataloader
@@ -24,21 +24,22 @@ def get_args():
 def run(config):
     ######################################################################
     # Logger
-    logger = util.Logger(path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "logs/"), name="logger.log")
-    logger("Config:\t" + "*" * 20)
-    logger(config)
-    logger("*" * 20)
+    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="vis_logger.log")
+
+    ######################################################################
+    # Logger
+    logger.info(f"Config is:\t{config}")
 
     ######################################################################
     # Device
     device = torch.device(config.TASK.DEVICE)
-    logger("Device is:\t {}".format(device))
+    logger.info(f"Device is:\t {device}")
 
     ######################################################################
     # Data
     end = time.time()
     dataset, train_loader, query_loader, gallery_loader = build_dataloader(config)
-    logger("Data loading time:\t {:.3f}".format(time.time() - end))
+    logger.info(f"Data loading time:\t{time.time() - end:.3f}")
 
     ######################################################################
     # Model
@@ -48,7 +49,9 @@ def run(config):
     ########################################################
     # 可视化
     ########################################################
+    logger.info(f"Start Visualization...")
     visualization(config, reid_net, train_loader, query_loader, gallery_loader, logger, device)
+    logger.info(f"Visualization Done!")
 
 
 if __name__ == "__main__":
@@ -56,3 +59,4 @@ if __name__ == "__main__":
     config = util.load_config(args.config_file, args.opts)
     util.set_seed_torch(config.TASK.SEED)
     run(config)
+    util.clean_pycache()
