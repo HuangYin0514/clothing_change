@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 
 import torch
+import torch.nn as nn
 import util
 from build_criterion import Build_Criterion
 from build_optimizer import Build_Optimizer
@@ -51,12 +52,7 @@ def run(config):
     reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
     total_params, train_params = util.get_model_param_info(reid_net)
     logger.info(f"Model: {type(reid_net).__name__}, " f"Total params: {total_params/1e6:.2f} M, " f"Trainable params: {train_params/1e6:.2f} M")
-
-    gpu_list = [0, 1]
-    logger.info(f"Used GPU IDs: {gpu_list}, Device is:\t{device}")
-    if len(gpu_list) > 1 and torch.cuda.device_count() > 1:
-        reid_net = torch.nn.DataParallel(reid_net, device_ids=gpu_list)
-        logger.info(f"Enable DataParallel with GPUs: {gpu_list}")
+    reid_net = nn.DataParallel(reid_net)  # 默认使用所有可见GPU，2卡会自动分配
 
     # ######################################################################
     # # Criterion
