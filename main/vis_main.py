@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 
 import torch
+import torch.distributed as dist
 import torch.nn as nn
 import util
 from core import visualization
@@ -46,7 +47,9 @@ def run(config):
     # Model
     reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
     util.resume_model(reid_net, config.TEST.RESUME_EPOCH, path=os.path.join(config.SAVE.OUTPUT_PATH, "models/"))
-    reid_net = nn.DataParallel(reid_net)  # 默认使用所有可见GPU，2卡会自动分配
+    dist.init_process_group(backend="nccl")
+    model = nn.parallel.DistributedDataParallel(model)
+    # reid_net = nn.DataParallel(reid_net)  # 默认使用所有可见GPU，2卡会自动分配
 
     ########################################################
     # 可视化
