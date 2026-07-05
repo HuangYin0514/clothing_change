@@ -116,6 +116,11 @@ if __name__ == "__main__":
     config = util.load_config(args.config_file, args.opts)
     util.set_seed_torch(config.TASK.SEED)
 
+    # 填入你的完整密钥
+    api_key = "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"
+    # 强制重新登录，覆盖旧缓存
+    wandb.login(key=api_key, relogin=True)
+
     # 初始化wandb
     wandb.init(
         entity="yinhuang-team-projects",

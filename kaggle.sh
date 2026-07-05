@@ -1,7 +1,7 @@
 ###########################################################
 # Wandb
 ###########################################################
-wandb login c74133df8c2cf575304acf8a99fe03ab74b6fe6a
+wandb login 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
 
 ############################################################
 # ltcc
