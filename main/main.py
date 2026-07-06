@@ -29,10 +29,10 @@ def get_args():
 
 
 def run(config, logger, device, *args, **kwargs):
-    # # ######################################################################
-    # # Accelerator
-    # accelerator = Accelerator()
-    # device = accelerator.device
+    # ######################################################################
+    # Accelerator
+    accelerator = Accelerator()
+    device = accelerator.device
 
     # ######################################################################
     # Data
@@ -45,7 +45,11 @@ def run(config, logger, device, *args, **kwargs):
     reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
     total_params, train_params = util.get_model_param_info(reid_net)
     logger.info(f"Model: {type(reid_net).__name__}, " f"Total params: {total_params/1e6:.2f} M, " f"Trainable params: {train_params/1e6:.2f} M")
-    reid_net = nn.DataParallel(reid_net)  # 默认使用所有可见GPU，2卡会自动分配
+    if not torch.cuda.device_count() > 1:
+        logger.info("Accelerator is not used!")
+        reid_net = nn.DataParallel(reid_net)  # 本地调试
+    else:
+        logger.info("Accelerator is used!")
 
     # ######################################################################
     # Criterion
@@ -66,8 +70,9 @@ def run(config, logger, device, *args, **kwargs):
     # Training & Evaluation
     logger.info("Start Training...")
     best_epoch, best_mAP, best_rank1 = 0, 0, 0
+    reid_net, optimizer, train_loader = accelerator.prepare(reid_net, optimizer, train_loader)
     for epoch in range(0, config.OPTIMIZER.TOTAL_TRAIN_EPOCH):
-        meter = train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, logger)
+        meter = train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, logger, accelerator)
         logger.wandb(
             {
                 "Epoch": epoch,
