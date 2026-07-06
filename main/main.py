@@ -7,6 +7,7 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 import util
+from accelerate import Accelerator
 from build_criterion import Build_Criterion
 from build_optimizer import Build_Optimizer
 from build_scheduler import Build_Scheduler
@@ -27,45 +28,37 @@ def get_args():
     return args
 
 
-def run(config):
-    ######################################################################
-    # Logger
-    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log")
-
-    ######################################################################
-    # Logger
-    logger.info(f"Config is:\t{config}")
-
-    ######################################################################
-    # Device
-    device = torch.device(config.TASK.DEVICE)
-    logger.info(f"Device is:\t{device}")
+def run(config, logger, device, *args, **kwargs):
+    # # ######################################################################
+    # # Accelerator
+    # accelerator = Accelerator()
+    # device = accelerator.device
 
     # ######################################################################
-    # # Data
+    # Data
     end = time.time()
     dataset, train_loader, query_loader, gallery_loader = build_dataloader(config)
     logger.info(f"Data loading time:\t{time.time() - end:.3f}")
 
     # ######################################################################
-    # # Model
+    # Model
     reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
     total_params, train_params = util.get_model_param_info(reid_net)
     logger.info(f"Model: {type(reid_net).__name__}, " f"Total params: {total_params/1e6:.2f} M, " f"Trainable params: {train_params/1e6:.2f} M")
     reid_net = nn.DataParallel(reid_net)  # 默认使用所有可见GPU，2卡会自动分配
 
     # ######################################################################
-    # # Criterion
+    # Criterion
     criterion = Build_Criterion(config, dataset.num_train_pids)
     logger.info(f"Criterion:\t{criterion}")
 
-    # # ######################################################################
-    # # Optimizer
+    # ######################################################################
+    # Optimizer
     optimizer = Build_Optimizer(config, reid_net).optimizer
     logger.info(f"Optimizer:\t{type(optimizer).__name__}")
 
     # ######################################################################
-    # # Scheduler
+    # Scheduler
     scheduler = Build_Scheduler(config, optimizer).scheduler
     logger.info(f"Scheduler:\t{type(scheduler).__name__}")
 
@@ -78,8 +71,8 @@ def run(config):
         logger.wandb(
             {
                 "Epoch": epoch,
-                "Lr": optimizer.param_groups[0]["lr"],
-                **meter.get_dict(),
+                "Lr": float(f"{optimizer.param_groups[0]['lr']:.1e}"),
+                **{k: float(f"{v:.1e}") for k, v in meter.get_dict().items()},
             }
         )
 
@@ -114,14 +107,14 @@ def run(config):
 
 
 if __name__ == "__main__":
+    # 获取命令参数
     args = get_args()
     config = util.load_config(args.config_file, args.opts)
     util.set_seed_torch(config.TASK.SEED)
 
+    # 设置Wandb
     api_key = "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"
     wandb.login(key=api_key, relogin=True)
-
-    # 初始化wandb
     wandb.init(
         entity="yinhuang-team-projects",
         project=config.TASK.PROJECT,
@@ -130,6 +123,18 @@ if __name__ == "__main__":
         tags=config.TASK.TAGS,
         config=config,
     )
-    run(config)
+
+    # Logger
+    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log")
+    logger.info(f"Config is:\t{config}")
+
+    # Device
+    device = torch.device(config.TASK.DEVICE)
+    logger.info(f"Device is:\t{device}")
+
+    # 运行
+    run(config, logger, device)
+
+    # 清理程序
     util.clean_pycache()
     wandb.finish()
