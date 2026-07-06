@@ -33,6 +33,10 @@ def run(config, logger, device, *args, **kwargs):
     # Accelerator
     accelerator = Accelerator()
     device = accelerator.device
+    if torch.cuda.device_count() > 1:
+        logger.info("Accelerator is used!")
+    else:
+        logger.info("Accelerator is not used!")
 
     # ######################################################################
     # Data
@@ -45,11 +49,11 @@ def run(config, logger, device, *args, **kwargs):
     reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
     total_params, train_params = util.get_model_param_info(reid_net)
     logger.info(f"Model: {type(reid_net).__name__}, " f"Total params: {total_params/1e6:.2f} M, " f"Trainable params: {train_params/1e6:.2f} M")
-    if not torch.cuda.device_count() > 1:
-        logger.info("Accelerator is not used!")
-        reid_net = nn.DataParallel(reid_net)  # 本地调试
-    else:
-        logger.info("Accelerator is used!")
+    # if not torch.cuda.device_count() > 1:
+    #     logger.info("Accelerator is not used!")
+    #     reid_net = nn.DataParallel(reid_net)  # 本地调试
+    # else:
+    #     logger.info("Accelerator is used!")
 
     # ######################################################################
     # Criterion
