@@ -28,19 +28,15 @@ def get_args():
     return args
 
 
-def run(config, logger, device, *args, **kwargs):
-    # ######################################################################
-    # Accelerator
-    accelerator = Accelerator()
-    device = accelerator.device
+def run(config, logger, device, accelerator, *args, **kwargs):
 
-    # ######################################################################
+    ######################################################################
     # Data
     end = time.time()
     dataset, train_loader, query_loader, gallery_loader = build_dataloader(config)
     logger.info(f"Data loading time:\t{time.time() - end:.3f}")
 
-    # ######################################################################
+    ######################################################################
     # Model
     reid_net = ReID_Net(config, dataset.num_train_pids)
     total_params, train_params = util.get_model_param_info(reid_net)
@@ -51,22 +47,22 @@ def run(config, logger, device, *args, **kwargs):
         logger.info("Accelerator is not used!")
         reid_net = nn.DataParallel(reid_net)
 
-    # ######################################################################
+    ######################################################################
     # Criterion
     criterion = Build_Criterion(config, dataset.num_train_pids)
     logger.info(f"Criterion:\t{criterion}")
 
-    # ######################################################################
+    ######################################################################
     # Optimizer
     optimizer = Build_Optimizer(config, reid_net).optimizer
     logger.info(f"Optimizer:\t{type(optimizer).__name__}")
 
-    # ######################################################################
+    ######################################################################
     # Scheduler
     scheduler = Build_Scheduler(config, optimizer).scheduler
     logger.info(f"Scheduler:\t{type(scheduler).__name__}")
 
-    # ######################################################################
+    ######################################################################
     # Training & Evaluation
     logger.info("Start Training...")
     best_epoch, best_mAP, best_rank1 = 0, 0, 0
@@ -117,28 +113,34 @@ if __name__ == "__main__":
     config = util.load_config(args.config_file, args.opts)
     util.set_seed_torch(config.TASK.SEED)
 
-    # 设置Wandb
-    api_key = "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"
-    wandb.login(key=api_key, relogin=True)
-    wandb.init(
-        entity="yinhuang-team-projects",
-        project=config.TASK.PROJECT,
-        name=config.TASK.NAME,
-        notes=config.TASK.NOTES,
-        tags=config.TASK.TAGS,
-        config=config,
-    )
-
     # Logger
     logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log")
     logger.info(f"Config is:\t{config}")
 
-    # Device
-    device = torch.device(config.TASK.DEVICE)
+    # # Device
+    # device = torch.device(config.TASK.DEVICE)
+    # logger.info(f"Device is:\t{device}")
+
+    # Accelerator
+    accelerator = Accelerator()
+    device = accelerator.device
     logger.info(f"Device is:\t{device}")
 
+    # 设置Wandb
+    if accelerator.is_main_process:
+        api_key = "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"
+        wandb.login(key=api_key, relogin=True)
+        wandb.init(
+            entity="yinhuang-team-projects",
+            project=config.TASK.PROJECT,
+            name=config.TASK.NAME,
+            notes=config.TASK.NOTES,
+            tags=config.TASK.TAGS,
+            config=config,
+        )
+
     # 运行
-    run(config, logger, device)
+    run(config, logger, device, accelerator)
 
     # 清理程序
     util.clean_pycache()
