@@ -113,31 +113,20 @@ if __name__ == "__main__":
     config = util.load_config(args.config_file, args.opts)
     util.set_seed_torch(config.TASK.SEED)
 
-    # Logger
-    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log")
-    logger.info(f"Config is:\t{config}")
-
-    # # Device
-    # device = torch.device(config.TASK.DEVICE)
-    # logger.info(f"Device is:\t{device}")
-
     # Accelerator
     accelerator = Accelerator()
-    device = accelerator.device
-    logger.info(f"Device is:\t{device}")
+    device = accelerator.device  # device = torch.device(config.TASK.DEVICE)
+
+    # Logger
+    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log", accelerator=accelerator)
 
     # 设置Wandb
-    if accelerator.is_main_process:
-        api_key = "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"
-        wandb.login(key=api_key, relogin=True)
-        wandb.init(
-            entity="yinhuang-team-projects",
-            project=config.TASK.PROJECT,
-            name=config.TASK.NAME,
-            notes=config.TASK.NOTES,
-            tags=config.TASK.TAGS,
-            config=config,
-        )
+    WANDB_KEY = "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"
+    logger.wandb_start(api_key=WANDB_KEY, entity="yinhuang-team-projects", task_config=config.TASK)
+
+    # 打印信息
+    logger.info(f"Config is:\t{config}")
+    logger.info(f"Device is:\t{device}")
 
     # 运行
     run(config, logger, device, accelerator)
