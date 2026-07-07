@@ -9,7 +9,6 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
     meter = util.MultiItemAverageMeter()
     for epoch, data in enumerate(tqdm(train_loader)):
         img, pid, camid, clotheid = data
-        # img, pid, camid, clotheid = img.to(device), pid.to(device), camid.to(device), clotheid.to(device)
 
         if config.MODEL.MODULE == "Lucky":
             B, C, H, W = img.size()
@@ -27,7 +26,6 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
             total_loss += global_tri_loss
 
             optimizer.zero_grad()
-            # total_loss.backward()
             accelerator.backward(total_loss)
             optimizer.step()
 
