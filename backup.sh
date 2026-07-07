@@ -1,7 +1,7 @@
 ####################################
 # git
 ####################################
-VERSION_NAME="initial commit"
+VERSION_NAME="v12"
 
 
 git status # 查看状态
