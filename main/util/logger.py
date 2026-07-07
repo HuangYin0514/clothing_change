@@ -11,7 +11,6 @@ class Logger:
         log_path = Path(path_dir)
         util.make_dirs(log_path)
         self.file_path = str(log_path / name)
-        self.clear()
 
         # 分布式多进程控制
         self.accelerator = accelerator
@@ -24,6 +23,8 @@ class Logger:
         self.wandb_entity = None
         self.wandb_config = None  # 存储task配置对象
         self._wandb_inited = False  # 标记是否已初始化wandb
+
+        self.clear()
 
     def set_accelerator(self, accelerator):
         """动态绑定accelerator"""
