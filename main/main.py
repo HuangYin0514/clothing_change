@@ -45,7 +45,7 @@ def run(config, logger, device, accelerator, *args, **kwargs):
         logger.info("Accelerator is used!")
     else:
         logger.info("Accelerator is not used!")
-        reid_net = nn.DataParallel(reid_net)
+        reid_net = nn.DataParallel(reid_net)  # 用于本地测试
 
     ######################################################################
     # Criterion
@@ -82,7 +82,7 @@ def run(config, logger, device, accelerator, *args, **kwargs):
             logger.wandb(
                 {
                     "Dataset": config.DATA.TRAIN_DATASET,
-                    "test_epoch": epoch,
+                    "Test_epoch": epoch,
                     "mAP": mAP,
                     "Rank1": CMC[0],
                     "CMC": CMC,
