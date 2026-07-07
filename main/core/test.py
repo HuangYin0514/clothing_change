@@ -88,8 +88,8 @@ def test(config, reid_net, query_loader, gallery_loader, device, logger):
     # mAP, CMC = ReIDEvaluator(mode=config.TEST.TEST_MODE).evaluate(distmat, q_pids, q_camids, g_pids, g_camids)  # 标准测试/性能低于服装专用的评估器
     # logger("SC mode, \t mAP: {:.2f}; \t Rank: {}.".format(mAP, CMC[0:20]))
     CMC_SC, mAP_SC = evaluate_ltcc(distmat, q_pids, g_pids, q_camids, g_camids, q_clothids, g_clothids, mode="SC")
-    logger(f"SC mode: mAP: {mAP_SC}; CMC:{CMC_SC[0:20]}.")
+    logger(f"SC mode: mAP: {mAP_SC}; Rank1: {CMC_SC[0]}; CMC:{CMC_SC[0:20]}.")
 
     CMC_CC, mAP_CC = evaluate_ltcc(distmat, q_pids, g_pids, q_camids, g_camids, q_clothids, g_clothids, mode="CC")
-    logger(f"CC mode: mAP: {mAP_CC}; CMC:{CMC_CC[0:20]}.")
+    logger(f"CC mode: mAP: {mAP_CC}; Rank1: {CMC_CC[0]}; CMC:{CMC_CC[0:20]}.")
     return mAP_CC, CMC_CC[0:20]

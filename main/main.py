@@ -89,16 +89,16 @@ def run(config, logger, device, accelerator, *args, **kwargs):
                 }
             )
 
-            is_best_map_flag = mAP >= best_mAP  # is_best_rank_flag = CMC[0] >= best_rank1
-            if is_best_map_flag:
+            if mAP >= best_mAP:  # CMC[0] >= best_rank1
+                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 best_epoch = epoch
                 best_rank1 = CMC[0]
                 best_mAP = mAP
                 logger.wandb(
                     {
-                        "Best_epoch": best_epoch,
-                        "Best_mAP": best_mAP,
-                        "Best_Rank1": best_rank1,
+                        "best_epoch": best_epoch,
+                        "best_mAP": best_mAP,
+                        "best_rank1": best_rank1,
                     }
                 )
                 if epoch > 40:
