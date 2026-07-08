@@ -90,7 +90,6 @@ def run(config, logger, device, accelerator, *args, **kwargs):
             )
 
             if mAP >= best_mAP:  # CMC[0] >= best_rank1
-                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 best_epoch = epoch
                 best_rank1 = CMC[0]
                 best_mAP = mAP

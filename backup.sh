@@ -1,7 +1,7 @@
 ####################################
 # git
 ####################################
-VERSION_NAME="v13"
+VERSION_NAME="NUM_WORKERS"
 
 
 git status # 查看状态
