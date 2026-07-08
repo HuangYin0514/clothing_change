@@ -6,10 +6,11 @@ from .make_dirs import make_dirs
 from .os_walk import os_walk
 
 
-def save_model(model, epoch, path_dir):
+def save_model(model, epoch, path_dir, accelerator):
     make_dirs(path_dir)
     model_file_path = os.path.join(path_dir, f"model_{epoch}.pth")
-    torch.save(model.state_dict(), model_file_path)
+    # torch.save(model.state_dict(), model_file_path)
+    accelerator.save(model.state_dict(), model_file_path)
 
     root, _, files = os_walk(path_dir)
     if len(files) > 1:
