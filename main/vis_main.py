@@ -34,7 +34,7 @@ def run(config, logger, device, accelerator, *args, **kwargs):
     ######################################################################
     # Model
     reid_net = ReID_Net(config, dataset.num_train_pids)
-    util.resume_model(reid_net, config.TEST.RESUME_EPOCH, path=os.path.join(config.SAVE.OUTPUT_PATH, "models/"))
+    util.resume_model(reid_net, config.TEST.RESUME_TEST_MODEL, path=os.path.join(config.SAVE.OUTPUT_PATH, "models/"))
     total_params, train_params = util.get_model_param_info(reid_net)
     logger.info(f"Model: {type(reid_net).__name__}, " f"Total params: {total_params/1e6:.2f} M, " f"Trainable params: {train_params/1e6:.2f} M")
     if torch.cuda.device_count() > 1:
