@@ -102,6 +102,7 @@ def run(config, logger, device, accelerator, *args, **kwargs):
                 )
                 if epoch > 40:
                     util.save_model(model=reid_net, epoch=epoch, path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "models/"), accelerator=accelerator)
+                util.save_model(model=reid_net, epoch=epoch, path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "models/"), accelerator=accelerator)
 
     logger.info(f"Training done. Best model is: epoch: {best_epoch}, mAP: {best_mAP}%, Rank1: {best_rank1}%.")
 
