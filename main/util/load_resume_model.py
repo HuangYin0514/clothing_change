@@ -23,13 +23,35 @@ def save_model(model, epoch, path_dir, accelerator):
 
 
 def resume_model(model, resume_epoch, path):
+    # model_path = os.path.join(path, f"model_{resume_epoch}.pth")
+    # # model.load_state_dict(torch.load(model_path, weights_only=False), strict=False)
+    # # model.load_state_dict(torch.load(model_path), strict=False)
+    # state_dict = torch.load(model_path)
+    # # 打印不匹配key，方便排查
+    # missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    # print(f"加载权重：缺失key {len(missing)} 个，多余key {len(unexpected)} 个")
+    # if missing:
+    #     print("缺失参数:", missing[:10])
+    # print(f"Successfully resume model from {model_path}")
+
     model_path = os.path.join(path, f"model_{resume_epoch}.pth")
-    # model.load_state_dict(torch.load(model_path, weights_only=False), strict=False)
-    # model.load_state_dict(torch.load(model_path), strict=False)
-    state_dict = torch.load(model_path)
-    # 打印不匹配key，方便排查
-    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    # 安全加载权重
+    state_dict = torch.load(model_path, map_location="cpu", weights_only=True)
+
+    # 清洗DDP module. 前缀
+    clean_state = {}
+    for k, v in state_dict.items():
+        if k.startswith("module."):
+            clean_k = k[7:]
+            clean_state[clean_k] = v
+        else:
+            clean_state[k] = v
+
+    # 加载权重
+    missing, unexpected = model.load_state_dict(clean_state, strict=False)
     print(f"加载权重：缺失key {len(missing)} 个，多余key {len(unexpected)} 个")
     if missing:
-        print("缺失参数:", missing[:10])
+        print("缺失参数前10个:", missing[:10])
+    if unexpected:
+        print("多余参数前10个:", unexpected[:10])
     print(f"Successfully resume model from {model_path}")
