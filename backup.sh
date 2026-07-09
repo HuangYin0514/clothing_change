@@ -1,7 +1,7 @@
 ####################################
 # git
 ####################################
-VERSION_NAME="NUM_WORKERS"
+VERSION_NAME="v18"
 
 
 git status # 查看状态
