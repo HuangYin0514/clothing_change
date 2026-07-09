@@ -25,5 +25,11 @@ def save_model(model, epoch, path_dir, accelerator):
 def resume_model(model, resume_epoch, path):
     model_path = os.path.join(path, f"model_{resume_epoch}.pth")
     # model.load_state_dict(torch.load(model_path, weights_only=False), strict=False)
-    model.load_state_dict(torch.load(model_path), strict=False)
+    # model.load_state_dict(torch.load(model_path), strict=False)
+    state_dict = torch.load(model_path)
+    # 打印不匹配key，方便排查
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    print(f"加载权重：缺失key {len(missing)} 个，多余key {len(unexpected)} 个")
+    if missing:
+        print("缺失参数:", missing[:10])
     print(f"Successfully resume model from {model_path}")
