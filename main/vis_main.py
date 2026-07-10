@@ -5,10 +5,7 @@ import warnings
 from pathlib import Path
 
 import torch
-import torch.distributed as dist
-import torch.nn as nn
 import util
-from accelerate import Accelerator
 from core import visualization
 from data import build_dataloader
 from model import ReID_Net
@@ -34,14 +31,9 @@ def run(config, logger, device, accelerator, *args, **kwargs):
     ######################################################################
     # Model
     reid_net = ReID_Net(config, dataset.num_train_pids).to(device)
-    util.resume_model(reid_net, config.TEST.RESUME_TEST_MODEL, path=os.path.join(config.SAVE.OUTPUT_PATH, "models/"))
+    util.resume_model(reid_net, path=os.path.join(config.SAVE.OUTPUT_PATH, "models/"), resume_epoch=config.TEST.RESUME_TEST_MODEL, logger=logger)
     total_params, train_params = util.get_model_param_info(reid_net)
     logger.info(f"Model: {type(reid_net).__name__}, " f"Total params: {total_params/1e6:.2f} M, " f"Trainable params: {train_params/1e6:.2f} M")
-    # if torch.cuda.device_count() > 1:
-    #     logger.info("Accelerator is used!")
-    # else:
-    #     logger.info("Accelerator is not used!")
-    #     reid_net = nn.DataParallel(reid_net)  # 用于本地测试
 
     ########################################################
     # 可视化

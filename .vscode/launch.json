@@ -34,7 +34,7 @@
                 "TASK.NOTES=None",
                 "TASK.DEVICE=cpu",
                 "MODEL.MODULE=Lucky",
-                "TEST.RESUME_EPOCH=0",
+                "TEST.RESUME_TEST_EPOCH=-1",
                 "DATA.TRAIN_DATASET=ltcc",
                 "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
                 "SAVE.OUTPUT_PATH=results/outputs",
