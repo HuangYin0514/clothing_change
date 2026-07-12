@@ -100,8 +100,8 @@ def run(config, logger, device, accelerator, *args, **kwargs):
                         "best_rank1": best_rank1,
                     }
                 )
-            if epoch > 40 or epoch == config.OPTIMIZER.TOTAL_TRAIN_EPOCH - 1:
-                util.save_model(model=reid_net, epoch=epoch, path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "models/"), accelerator=accelerator, logger=logger)
+                if epoch > config.TEST.SAVE_START_EPOCH:
+                    util.save_model(model=reid_net, epoch=epoch, path_dir=os.path.join(config.SAVE.OUTPUT_PATH, "models/"), accelerator=accelerator, logger=logger)
 
     logger.info(f"Training done. Best model is: epoch: {best_epoch}, mAP: {best_mAP}%, Rank1: {best_rank1}%.")
 

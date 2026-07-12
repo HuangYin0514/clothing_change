@@ -17,6 +17,7 @@
                 "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
                 "OPTIMIZER.TOTAL_TRAIN_EPOCH=1",
                 "TEST.EVAL_EPOCH=1",
+                "TEST.SAVE_START_EPOCH=-1",
                 "MODEL.MODULE=Lucky",
                 "SAVE.OUTPUT_PATH=results/outputs",
             ]
