@@ -42,7 +42,7 @@ class Logger:
         if not self.is_main:
             return
         if self._wandb_inited:
-            self.warn("wandb已经初始化，无需重复启动")
+            self.warn("Wandb已经初始化，无需重复启动")
             return
 
         # 登录wandb
@@ -50,6 +50,7 @@ class Logger:
         self.wandb_entity = entity
         self.wandb_config = task_config
 
+        settings = wandb.Settings(silent=True, show_info=False, show_warnings=False, show_errors=True)
         wandb.login(key=api_key, relogin=True)
         wandb.init(
             entity=entity,
@@ -58,6 +59,7 @@ class Logger:
             notes=task_config.NOTES,
             tags=task_config.TAGS,
             config=task_config,
+            settings=settings,
         )
         self._wandb_inited = True
         self.info(f"Wandb run 初始化完成: {task_config.PROJECT}/{task_config.NAME}")
