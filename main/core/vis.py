@@ -1,7 +1,3 @@
-####################
-# 参考代码
-# https://www.kaggle.com/code/huangyin0514/cc-reid/output
-####################
 import random
 from pathlib import Path
 
