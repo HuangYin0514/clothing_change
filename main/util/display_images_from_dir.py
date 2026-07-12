@@ -8,40 +8,34 @@ import warnings
 
 import matplotlib
 
-matplotlib.use("Agg")  # 无GUI后端，只用于保存文件
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from PIL import Image
 
 warnings.filterwarnings("ignore")
 
-# 固定输出图片路径，方便Notebook读取
-OUTPUT_SAVE_PATH = "/results/simple_vis/image_grid_output.png"
+# 改用 kaggle working 目录，稳定可写
+OUTPUT_SAVE_PATH = "/kaggle/working/image_grid_output.png"
 
 
-# -------------------------- 参数配置（argparse） --------------------------
 def get_args():
-    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/results/simple_vis")
-    # 必选参数：图片目录
+    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/kaggle/working")
     parser.add_argument("--img_dir", type=str, required=True, help="图片文件夹路径")
-    # 可选参数
     parser.add_argument("--max_imgs", type=int, default=100, help="最多加载图片数量，默认100")
     parser.add_argument("--rows", type=int, default=10, help="网格行数，默认10")
     parser.add_argument("--cols", type=int, default=5, help="网格列数，默认5")
     return parser.parse_args()
 
 
-# 支持的图片后缀
 IMAGE_EXTENSIONS = ["*.jpg", "*.jpeg", "*.png", "*.bmp", "*.gif"]
 
 
 def display_images_from_dir(image_dir, max_images=100, grid_rows=10, grid_cols=5):
-    # 收集所有图片
     image_paths = []
     for ext in IMAGE_EXTENSIONS:
         image_paths.extend(glob.glob(os.path.join(image_dir, ext), recursive=False))
         image_paths.extend(glob.glob(os.path.join(image_dir, ext.upper()), recursive=False))
 
-    # 去重并截断数量
     image_paths = list(set(image_paths))[:max_images]
     num_images = len(image_paths)
     total_slots = grid_rows * grid_cols
@@ -69,9 +63,14 @@ def display_images_from_dir(image_dir, max_images=100, grid_rows=10, grid_cols=5
             continue
 
     plt.tight_layout()
-    # 删掉 plt.show()，只保存文件
+
+    # ========== 关键修复：自动创建父文件夹 ==========
+    save_dir = os.path.dirname(OUTPUT_SAVE_PATH)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir, exist_ok=True)
+
     plt.savefig(OUTPUT_SAVE_PATH, dpi=150, bbox_inches="tight")
-    plt.close()  # 释放画布，防止内存堆积
+    plt.close()
     print(f"网格图片已保存至: {OUTPUT_SAVE_PATH}")
 
 
