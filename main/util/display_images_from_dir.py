@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import argparse
 import glob
 import os
 import warnings
 
+# 新增两行Kaggle兼容代码
 import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from PIL import Image
 
 warnings.filterwarnings("ignore")
-matplotlib.use("Agg")
 
 
 # -------------------------- 参数配置（argparse） --------------------------
