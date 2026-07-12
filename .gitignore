@@ -42,4 +42,5 @@
 *.pth
 *.log
 *.png
+*kaggle.sh
 
