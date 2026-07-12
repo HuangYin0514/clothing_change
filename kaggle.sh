@@ -10,12 +10,7 @@
 # 基线
 accelerate launch --multi_gpu --num_processes 2 main/main.py \
 --config_file "main/config/method.yml" \
-TASK.NOTES=v24 TASK.NAME=B MODEL.BACKBONE_TYPE=resnet50
-
-accelerate launch --multi_gpu --num_processes 2 main/main.py \
---config_file "main/config/method.yml" \
-TASK.NOTES=v25 TASK.NAME=B_IBN MODEL.BACKBONE_TYPE=resnet50_ibn_a
-
+TASK.NOTES=v25 TASK.NAME=B MODEL.BACKBONE_TYPE=resnet50
 
 # 可视化
 python main/vis_main.py --config_file "main/config/method.yml"
