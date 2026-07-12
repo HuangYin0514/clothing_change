@@ -6,19 +6,21 @@ import glob
 import os
 import warnings
 
-# 新增两行Kaggle兼容代码
 import matplotlib
 
-matplotlib.use("Agg")
+matplotlib.use("Agg")  # 无GUI后端，只用于保存文件
 import matplotlib.pyplot as plt
 from PIL import Image
 
 warnings.filterwarnings("ignore")
 
+# 固定输出图片路径，方便Notebook读取
+OUTPUT_SAVE_PATH = "/results/simple_vis/image_grid_output.png"
+
 
 # -------------------------- 参数配置（argparse） --------------------------
 def get_args():
-    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化")
+    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/results/simple_vis")
     # 必选参数：图片目录
     parser.add_argument("--img_dir", type=str, required=True, help="图片文件夹路径")
     # 可选参数
@@ -67,7 +69,10 @@ def display_images_from_dir(image_dir, max_images=100, grid_rows=10, grid_cols=5
             continue
 
     plt.tight_layout()
-    plt.show()
+    # 删掉 plt.show()，只保存文件
+    plt.savefig(OUTPUT_SAVE_PATH, dpi=150, bbox_inches="tight")
+    plt.close()  # 释放画布，防止内存堆积
+    print(f"网格图片已保存至: {OUTPUT_SAVE_PATH}")
 
 
 if __name__ == "__main__":
