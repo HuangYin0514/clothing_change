@@ -14,11 +14,11 @@ from PIL import Image
 
 warnings.filterwarnings("ignore")
 
-OUTPUT_SAVE_PATH = "/kaggle/working/clothing_change/image_grid_output.png"
+OUTPUT_SAVE_PATH = "/kaggle/working/clothing_change/results/image_grid_output.png"
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/kaggle/working/clothing_change")
+    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/kaggle/working/clothing_change/results")
     parser.add_argument("--img_dir", type=str, required=True, help="图片文件夹路径")
     parser.add_argument("--max_imgs", type=int, default=100, help="最多加载图片数量，默认100")
     parser.add_argument("--rows", type=int, default=10, help="网格行数，默认10")
