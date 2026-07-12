@@ -36,5 +36,5 @@ TEST:
   RE_RANK: False
 
 SAVE:
-  OUTPUT_PATH: "results/outputs"
+  OUTPUT_PATH: "results"
 

@@ -19,7 +19,7 @@
                 "TEST.EVAL_EPOCH=1",
                 "TEST.SAVE_START_EPOCH=-1",
                 "MODEL.MODULE=Lucky",
-                "SAVE.OUTPUT_PATH=results/outputs",
+                "SAVE.OUTPUT_PATH=results",
             ]
         },
         {
@@ -38,7 +38,7 @@
                 "TEST.RESUME_TEST_EPOCH=-1",
                 "DATA.TRAIN_DATASET=ltcc",
                 "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
-                "SAVE.OUTPUT_PATH=results/outputs",
+                "SAVE.OUTPUT_PATH=results",
             ]
         },
     ]
