@@ -43,7 +43,7 @@ def display_images_from_dir(image_dir, max_images=100, grid_rows=10, grid_cols=5
         print(f"错误：目录 {image_dir} 未找到任何图片！")
         return
 
-    print(f"共找到 {num_images} 张图片，网格 {grid_rows}×{grid_cols}，最多展示 {total_slots} 张")
+    print(f"共找到 {num_images} 张图片，网格 {grid_rows}-{grid_cols}，最多展示 {total_slots} 张")
 
     plt.rcParams["figure.figsize"] = (20, 20)
     plt.subplots_adjust(wspace=0.1, hspace=0.1)
