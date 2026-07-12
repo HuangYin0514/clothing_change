@@ -5,10 +5,12 @@ import glob
 import os
 import warnings
 
+import matplotlib
 import matplotlib.pyplot as plt
 from PIL import Image
 
 warnings.filterwarnings("ignore")
+matplotlib.use("Agg")
 
 
 # -------------------------- 参数配置（argparse） --------------------------

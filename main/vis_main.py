@@ -57,6 +57,7 @@ if __name__ == "__main__":
     logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log", accelerator=accelerator)
 
     # 打印信息
+    logger.info(f"*" * 30)
     logger.info(f"Config is:\t{config}")
     logger.info(f"Device is:\t{device}")
 

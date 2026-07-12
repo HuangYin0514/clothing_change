@@ -124,6 +124,7 @@ if __name__ == "__main__":
     logger.wandb_start(api_key=WANDB_KEY, entity="yinhuang-team-projects", task_config=config.TASK)
 
     # 打印信息
+    logger.info(f"*" * 30)
     logger.info(f"Config is:\t{config}")
     logger.info(f"Device is:\t{device}")
 
