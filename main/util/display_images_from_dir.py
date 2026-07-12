@@ -14,12 +14,12 @@ from PIL import Image
 
 warnings.filterwarnings("ignore")
 
-# 改用 kaggle working 目录，稳定可写
-OUTPUT_SAVE_PATH = "/kaggle/working/image_grid_output.png"
+# 改用 kaggle vis_simple 目录，稳定可写
+OUTPUT_SAVE_PATH = "/kaggle/vis_simple/image_grid_output.png"
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/kaggle/working")
+    parser = argparse.ArgumentParser(description="批量读取文件夹图片并网格可视化，保存图片到/kaggle/vis_simple")
     parser.add_argument("--img_dir", type=str, required=True, help="图片文件夹路径")
     parser.add_argument("--max_imgs", type=int, default=100, help="最多加载图片数量，默认100")
     parser.add_argument("--rows", type=int, default=10, help="网格行数，默认10")
