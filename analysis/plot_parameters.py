@@ -54,6 +54,8 @@ def plot_dual_axis_line_chart(
     rank1_data: list,
     x_label: str,
     save_name: str,
+    y1_lim: tuple = None,
+    y2_lim: tuple = None,
 ):
     """
     双Y轴折线图：左轴mAP，右轴Rank-1
@@ -67,6 +69,10 @@ def plot_dual_axis_line_chart(
     ax1.set_xlabel(x_label)
     ax1.set_ylabel("mAP (%)")
     ax2.set_ylabel("Rank-1 (%)")
+    if y1_lim is not None:
+        ax1.set_ylim(*y1_lim)
+    if y2_lim is not None:
+        ax2.set_ylim(*y2_lim)
 
     handles = l1 + l2
     labels = [h.get_label() for h in handles]
@@ -136,14 +142,22 @@ def plot_parameter_partNum_Bar():
     x = [1, 2, 4, 8, 16]
     map_res = [58.6, 59.1, 58.3, 58.2, 57.4]
     rank1_res = [70.4, 71.2, 69.0, 69.3, 69.0]
-    plot_dual_axis_bar_chart(x_data=x, map_data=map_res, rank1_data=rank1_res, x_label=r"Parameter $Np$", save_name="parameter_partNum_bar.png")
+    plot_dual_axis_bar_chart(x_data=x, map_data=map_res, rank1_data=rank1_res, x_label=r"Parameter $N_p$", save_name="parameter_partNum_bar.png")
 
 
 def plot_parameter_partNum_line():
-    x = [1, 2, 4, 8, 16]
-    map_res = [58.6, 59.1, 58.3, 58.2, 57.4]
-    rank1_res = [70.4, 71.2, 69.0, 69.3, 69.0]
-    plot_dual_axis_line_chart(x_data=x, map_data=map_res, rank1_data=rank1_res, x_label=r"Parameter $Np$", save_name="parameter_partNum_line.png")
+    x = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    map_res = [64.339, 69.467, 69.78, 69.707, 71.221, 69.585, 70.863, 70.301, 70.968, 70.025, 70.946]
+    rank1_res = [67.499, 74.441, 74.915, 74.389, 77.044, 73.836, 76.15, 75.335, 75.914, 74.888, 76.203]
+    plot_dual_axis_line_chart(
+        x_data=x,
+        map_data=map_res,
+        rank1_data=rank1_res,
+        x_label=r"Parameter $N_p$",
+        y1_lim=(60, 90),
+        y2_lim=(60, 90),
+        save_name="parameter_partNum_line.png",
+    )
 
 
 if __name__ == "__main__":
