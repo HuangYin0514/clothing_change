@@ -48,6 +48,7 @@ class ReID_Net(nn.Module):
 ##########################
 # Backbone
 ##########################
+# Backbone_R50 ------------------------------
 class Backbone_R50(nn.Module):
     def __init__(self, backbone_type):
         super().__init__()
