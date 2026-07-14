@@ -14,7 +14,7 @@ class ReID_Net(nn.Module):
         BACKBONE_TYPE = config.MODEL.BACKBONE_TYPE
 
         # ------------- Backbone -----------------------
-        self.backbone = Backbone(BACKBONE_TYPE)
+        self.backbone = Backbone_R50(BACKBONE_TYPE)
 
         # ------------- Global -----------------------
         self.GLOBAL_DIM = 2048
@@ -45,12 +45,12 @@ class ReID_Net(nn.Module):
             return eval_feat
 
 
-#############################################################
-
-
-class Backbone(nn.Module):
+##########################
+# Backbone
+##########################
+class Backbone_R50(nn.Module):
     def __init__(self, backbone_type):
-        super(Backbone, self).__init__()
+        super(Backbone_R50, self).__init__()
 
         resnet = None
         if backbone_type == "resnet50":
