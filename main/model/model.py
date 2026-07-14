@@ -1,11 +1,8 @@
 import torch
 import torch.nn as nn
 
-from .bn_neck import BN_Neck
-from .classifier import Linear_Classifier
-from .gem_pool import GeneralizedMeanPoolingP
-from .resnet import resnet50
-from .resnet_ibn_a import resnet50_ibn_a
+from .backbone import resnet50, resnet50_ibn_a
+from .layer import BN_Neck, GeneralizedMeanPoolingP, Linear_Classifier
 
 
 class ReID_Net(nn.Module):

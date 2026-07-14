@@ -1,6 +1,6 @@
 from torch import nn
 
-from .weights_init import weights_init_kaiming
+from ..weights_init import weights_init_kaiming
 
 
 class BN_Neck(nn.Module):

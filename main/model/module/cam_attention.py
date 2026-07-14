@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 
 
-class CAM(nn.Module):
+class CAM_Attention(nn.Module):
 
     def __init__(self):
-        super(CAM, self).__init__()
+        super(CAM_Attention, self).__init__()
 
     def forward(self, features_map, pids, classifier):
         size, c, h, w = features_map.size()

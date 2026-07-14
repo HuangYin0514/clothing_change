@@ -1,18 +1,12 @@
 import torch
 import torch.nn as nn
 
-from .bn_neck import BN_Neck
-from .cam import CAM
-from .classifier import Linear_Classifier
-from .gem_pool import GeneralizedMeanPoolingP
-from .pool_attention import Pool_Attention
-from .resnet import resnet50
-from .resnet_ibn_a import resnet50_ibn_a
+from ..layer import GeneralizedMeanPoolingP, Linear_Classifier
 
 
-class Part_Module(nn.Module):
+class Horizontal_Partition(nn.Module):
     def __init__(self, num_pid, num_part=6, c_dim=2048, part_dim=256, pool_type="avg"):
-        super(Part_Module, self).__init__()
+        super(Horizontal_Partition, self).__init__()
         self.num_part = num_part
         self.num_pid = num_pid
         self.num_part = num_part

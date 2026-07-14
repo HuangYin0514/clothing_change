@@ -5,7 +5,7 @@ from torch.nn import functional as F
 from torch.nn import init
 
 from .bn_neck import BN_Neck
-from .weights_init import weights_init_classifier
+from ..weights_init import weights_init_classifier
 
 
 class Linear_Classifier(nn.Module):
