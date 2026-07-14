@@ -8,7 +8,7 @@ from .layer import BN_Neck, GeneralizedMeanPoolingP, Linear_Classifier
 class ReID_Net(nn.Module):
 
     def __init__(self, config, num_pid):
-        super(ReID_Net, self).__init__()
+        super().__init__()
         self.config = config
 
         BACKBONE_TYPE = config.MODEL.BACKBONE_TYPE
@@ -50,7 +50,7 @@ class ReID_Net(nn.Module):
 ##########################
 class Backbone_R50(nn.Module):
     def __init__(self, backbone_type):
-        super(Backbone_R50, self).__init__()
+        super().__init__()
 
         resnet = None
         if backbone_type == "resnet50":
@@ -63,12 +63,7 @@ class Backbone_R50(nn.Module):
         resnet.layer4[0].conv2.stride = (1, 1)
 
         # Backbone structure
-        self.layer0 = nn.Sequential(
-            resnet.conv1,
-            resnet.bn1,
-            resnet.relu,
-            resnet.maxpool,
-        )
+        self.layer0 = nn.Sequential(resnet.conv1, resnet.bn1, resnet.relu, resnet.maxpool)
 
         self.layer1 = resnet.layer1  # 3 blocks
         self.layer2 = resnet.layer2  # 4 blocks
