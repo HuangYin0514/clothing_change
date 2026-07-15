@@ -60,7 +60,7 @@ def evaluate_ltcc(distmat, q_pids, g_pids, q_camids, g_camids, q_clothids, g_clo
     mAP = round(mAP * 100, 3)
     CMC = [round(x * 100, 3) for x in all_cmc.tolist()]
 
-    return all_cmc, mAP
+    return CMC, mAP
 
 
 # def compute_ap_cmc(index, good_index, junk_index):
