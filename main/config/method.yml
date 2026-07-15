@@ -11,7 +11,7 @@ DATA:
   TRAIN_ROOT: "/kaggle/input/datasets/huangyin0514/ltcc-dataset/LTCC/rgb/"
   IMAGE_HEIGHT: 384
   IMAGE_WIDTH: 192
-  BATCHSIZE: 32
+  BATCHSIZE: 16
   NUM_INSTANCES: 8
   TEST_BATCH: 128
   NUM_WORKERS: 4
