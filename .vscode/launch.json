@@ -14,7 +14,7 @@
                 "TASK.NOTES=None",
                 "TASK.DEVICE=cpu",
                 "DATA.TRAIN_DATASET=ltcc",
-                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
+                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/rgb/",
                 "OPTIMIZER.TOTAL_TRAIN_EPOCH=1",
                 "TEST.EVAL_EPOCH=1",
                 "TEST.SAVE_START_EPOCH=-1",
@@ -37,7 +37,7 @@
                 "MODEL.MODULE=Lucky",
                 "TEST.RESUME_TEST_EPOCH=-1",
                 "DATA.TRAIN_DATASET=ltcc",
-                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/",
+                "DATA.TRAIN_ROOT=/Users/huangyin/Desktop/project/dataset/LTCC_concise/rgb/",
                 "SAVE.OUTPUT_PATH=results",
             ]
         },

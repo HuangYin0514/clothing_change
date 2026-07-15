@@ -77,7 +77,7 @@ def run(config, logger, device, accelerator, *args, **kwargs):
             }
         )
 
-        if epoch % config.TEST.EVAL_EPOCH == 0 or epoch == config.OPTIMIZER.TOTAL_TRAIN_EPOCH - 1:
+        if (epoch + 1) % config.TEST.EVAL_EPOCH == 0 or (epoch + 1) == config.OPTIMIZER.TOTAL_TRAIN_EPOCH:
             mAP, CMC = test(config, reid_net, query_loader, gallery_loader, device, logger)
             logger.wandb(
                 {

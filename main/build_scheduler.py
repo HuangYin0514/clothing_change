@@ -18,7 +18,7 @@ class Build_Scheduler:
                 optimizer,
                 [20, 40],
                 gamma=0.1,
-                warmup_factor=0.01,
+                warmup_factor=0.1,
                 warmup_iters=10,
                 last_epoch=-1,
             )
@@ -28,7 +28,16 @@ class Build_Scheduler:
 
 
 class WarmupMultiStepLR(torch.optim.lr_scheduler._LRScheduler):
-    def __init__(self, optimizer, milestones, gamma=0.1, warmup_factor=1.0 / 3, warmup_iters=500, warmup_method="linear", last_epoch=-1):
+    def __init__(
+        self,
+        optimizer,
+        milestones,
+        gamma=0.1,
+        warmup_factor=0.01,
+        warmup_iters=10,
+        warmup_method="linear",
+        last_epoch=-1,
+    ):
         if not list(milestones) == sorted(milestones):
             raise ValueError("Milestones should be a list of " " increasing integers. Got {}", milestones)
 
