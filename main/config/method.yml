@@ -8,7 +8,7 @@ TASK:
 
 DATA:
   TRAIN_DATASET: "ltcc"
-  TRAIN_ROOT: "/kaggle/input/datasets/huangyin0514/ltcc-dataset/LTCC/"
+  TRAIN_ROOT: "/kaggle/input/datasets/huangyin0514/ltcc-dataset/LTCC/rgb/"
   IMAGE_HEIGHT: 384
   IMAGE_WIDTH: 192
   BATCHSIZE: 32
