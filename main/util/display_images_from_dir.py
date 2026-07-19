@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+%cd /kaggle/working/clothing_change
+%matplotlib inline
+!python main/util/display_images_from_dir.py --img_dir=/kaggle/working/clothing_change/results/actmap \
+--max_imgs=30 --rows=5 --cols=6
+from IPython.display import Image, display
+display(Image("/kaggle/working/clothing_change/results/img_grid/image_grid_output.png"))
+
+"""
 
 import argparse
 import glob

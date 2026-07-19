@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     # 打印信息
     logger.info(f"*" * 30)
-    logger.info(f"Config is:\t{config}")
+    logger.info(f"Config is:\n{config}")
     logger.info(f"Device is:\t{device}")
 
     # 运行
