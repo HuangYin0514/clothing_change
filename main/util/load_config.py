@@ -50,7 +50,7 @@ class ConfigNode(dict):
 
     def _pretty_print(self, obj, indent):
         """递归生成格式化的字符串，实现自动换行"""
-        indent_str = "  " * indent  # 每层缩进2个空格
+        indent_str = "" * indent  # 每层缩进2个空格
         if isinstance(obj, ConfigNode):
             items = []
             for key, value in obj.items():

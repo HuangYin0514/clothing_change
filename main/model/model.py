@@ -70,14 +70,16 @@ class ReID_Net(nn.Module):
 
         # ------------- Global -----------------------
         res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap = self.backbone(img)
-        global_feat = self.global_pool(res4_featmap).view(B, self.GLOBAL_DIM)
-        global_bn_feat = self.global_bn_neck(global_feat)
 
-        if self.training:
-            return res4_featmap, global_feat, global_bn_feat
-        else:
+        if not self.training:
             eval_feat_meter = []
+
             # ------------- Global -----------------------
+            global_feat = self.global_pool(res4_featmap).view(B, self.GLOBAL_DIM)
+            global_bn_feat = self.global_bn_neck(global_feat)
             eval_feat_meter.append(global_bn_feat)
+
             eval_feat = torch.cat(eval_feat_meter, dim=1)
             return eval_feat
+
+        return res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap
