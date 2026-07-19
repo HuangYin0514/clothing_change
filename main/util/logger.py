@@ -17,13 +17,13 @@ class Logger:
         self.set_accelerator(accelerator)
 
         # wandb 相关缓存变量
-        self._wandb_inited = False  # 标记是否已初始化wandb
+        self._wandb_inited = False
 
         self.clear()
 
     def set_accelerator(self, accelerator):
         """动态绑定accelerator"""
-        if self.accelerator is not None:
+        if accelerator is not None:
             self.accelerator = accelerator
             self.is_main = self.accelerator.is_main_process
 
@@ -42,10 +42,6 @@ class Logger:
             return
 
         # 登录wandb
-        self.wandb_api_key = api_key
-        self.wandb_entity = entity
-        self.wandb_config = task_config
-
         settings = wandb.Settings(silent=True, show_info=False, show_warnings=False, show_errors=True)
         wandb.login(key=api_key, relogin=True)
         wandb.init(
