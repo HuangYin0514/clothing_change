@@ -30,12 +30,17 @@ class Backbone_R50(nn.Module):
 
     def forward(self, img):
         out = self.layer0(img)
+        res0_featmap = out
         out = self.layer1(out)
+        res1_featmap = out
         out = self.layer2(out)
+        res2_featmap = out
         out = self.layer3(out)
+        res3_featmap = out
         out = self.layer4(out)
+        res4_featmap = out
 
-        return out
+        return res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap
 
 
 class ReID_Net(nn.Module):
@@ -57,19 +62,19 @@ class ReID_Net(nn.Module):
 
     def heatmap(self, img):
         B, C, H, W = img.shape
-        backbone_feat_map = self.backbone(img)
-        return backbone_feat_map
+        res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap = self.backbone(img)
+        return res4_featmap
 
     def forward(self, img):
         B, C, H, W = img.shape
 
         # ------------- Global -----------------------
-        backbone_feat_map = self.backbone(img)
-        global_feat = self.global_pool(backbone_feat_map).view(B, self.GLOBAL_DIM)
+        res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap = self.backbone(img)
+        global_feat = self.global_pool(res4_featmap).view(B, self.GLOBAL_DIM)
         global_bn_feat = self.global_bn_neck(global_feat)
 
         if self.training:
-            return backbone_feat_map, global_feat, global_bn_feat
+            return res4_featmap, global_feat, global_bn_feat
         else:
             eval_feat_meter = []
             # ------------- Global -----------------------
