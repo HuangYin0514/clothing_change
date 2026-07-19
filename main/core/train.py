@@ -4,7 +4,6 @@ from tqdm import tqdm
 
 
 def train(config, reid_net, train_loader, criterion, optimizer, scheduler, device, epoch, logger, accelerator, *args, **kwargs):
-    reid_net = reid_net.module
     scheduler.step(epoch)
     reid_net.train()
     meter = util.MultiItemAverageMeter()
@@ -18,9 +17,9 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
             res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap = reid_net(img)
 
             # Global
-            global_feat = reid_net.global_pool(res4_featmap).view(B, reid_net.GLOBAL_DIM)
-            global_bn_feat = reid_net.global_bn_neck(global_feat)
-            global_cls_score = reid_net.global_classifier(global_bn_feat)
+            global_feat = reid_net.module.global_pool(res4_featmap).view(B, reid_net.module.GLOBAL_DIM)
+            global_bn_feat = reid_net.module.global_bn_neck(global_feat)
+            global_cls_score = reid_net.module.global_classifier(global_bn_feat)
             global_id_loss = criterion.ce_ls(global_cls_score, pid)
             meter.update({"global_id_loss": global_id_loss.item()})
             total_loss += global_id_loss
