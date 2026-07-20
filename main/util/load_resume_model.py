@@ -58,7 +58,7 @@ def resume_model(model, path, resume_epoch=None, logger=None):
     # 输出结果
     logger.info(f"Loading weights: {len(missing)} keys missing, {len(unexpected)} keys extra")
     if missing:
-        logger.info("Top 10 missing parameters:", missing[:10])
+        logger.info(f"Top 10 missing parameters: {missing[:10]}")
     if unexpected:
-        logger.info("Top 10 redundant parameters:", unexpected[:10])
+        logger.info(f"Top 10 redundant parameters: {unexpected[:10]}")
     logger.info(f"Successfully resume model from {model_path}")
