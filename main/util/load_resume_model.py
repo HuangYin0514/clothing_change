@@ -26,7 +26,7 @@ def save_model(model, epoch, path_dir, accelerator, logger=None):
         os.remove(model_file_path)  # 移除非最新的模型文件
 
     # 输出结果
-    logger.info(f"保存模型至 {model_file_path}")
+    logger.info(f"Save model to {model_file_path}")
 
 
 def resume_model(model, path, resume_epoch=None, logger=None):
@@ -37,7 +37,7 @@ def resume_model(model, path, resume_epoch=None, logger=None):
             file_iters = sorted([int(file.replace(".pth", "").split("_")[1]) for file in files], reverse=True)
             resume_epoch = file_iters[0]
         else:
-            raise Exception("未找到模型文件")
+            raise Exception("Model file not found!")
     else:
         resume_epoch = resume_epoch
 
@@ -56,9 +56,9 @@ def resume_model(model, path, resume_epoch=None, logger=None):
     missing, unexpected = model.load_state_dict(clean_state, strict=False)
 
     # 输出结果
-    logger.info(f"加载权重：缺失key {len(missing)} 个，多余key {len(unexpected)} 个")
+    logger.info(f"Loading weights: {len(missing)} keys missing, {len(unexpected)} keys extra")
     if missing:
-        logger.info("缺失参数前10个:", missing[:10])
+        logger.info("Top 10 missing parameters:", missing[:10])
     if unexpected:
-        logger.info("多余参数前10个:", unexpected[:10])
+        logger.info("Top 10 redundant parameters:", unexpected[:10])
     logger.info(f"Successfully resume model from {model_path}")
