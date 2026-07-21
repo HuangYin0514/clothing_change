@@ -54,7 +54,7 @@ if __name__ == "__main__":
     device = torch.device(config.TASK.DEVICE)
 
     # Logger
-    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log", accelerator=accelerator)
+    logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="vis_logger.log", accelerator=accelerator)
 
     # 打印信息
     logger.info(f"*" * 30)
