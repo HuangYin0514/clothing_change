@@ -44,13 +44,13 @@ def resume_model(model, path, resume_epoch=None, logger=None):
     # 加载模型权重文件
     model_path = os.path.join(path, f"model_{resume_epoch}.pth")
     state_dict = torch.load(model_path, map_location="cpu", weights_only=True)
-    # clean_state = {}
-    # for k, v in state_dict.items():
-    #     if k.startswith("module."):
-    #         clean_k = k[7:]
-    #         clean_state[clean_k] = v
-    #     else:
-    #         clean_state[k] = v
+    clean_state = {}
+    for k, v in state_dict.items():
+        if k.startswith("module."):
+            clean_k = k[7:]
+            clean_state[clean_k] = v
+        else:
+            clean_state[k] = v
 
     # 加载权重至模型
     missing, unexpected = model.load_state_dict(clean_state, strict=False)
