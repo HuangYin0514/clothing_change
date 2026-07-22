@@ -36,10 +36,10 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
                 hier_cls_score = reid_net.module.hier_classifier_list[i](hier_bn_feat)
                 hier_id_loss = criterion.ce_ls(hier_cls_score, pid)
                 meter.update({"hier_id_loss_{}".format(i): hier_id_loss.item()})
-                total_loss += hier_id_loss
+                total_loss += 0.1 * hier_id_loss
                 hier_tri_loss = criterion.tri(hier_feat, pid)
                 meter.update({"hier_tri_loss_{}".format(i): hier_tri_loss.item()})
-                total_loss += hier_tri_loss
+                total_loss += 0.1 * hier_tri_loss
 
             optimizer.zero_grad()
             accelerator.backward(total_loss)
