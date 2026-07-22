@@ -60,6 +60,19 @@ class ReID_Net(nn.Module):
         self.global_bn_neck = BN_Neck(self.GLOBAL_DIM)
         self.global_classifier = Linear_Classifier(self.GLOBAL_DIM, num_pid)
 
+        # ------------- Hierarchical layer -----------------------
+        hier_pool_list = nn.ModuleList()
+        hier_bn_neck_list = nn.ModuleList()
+        hier_classifier_list = nn.ModuleList()
+        self.HIER_DIM = [256, 512, 1024]
+        for i in range(3):
+            hier_pool_list.append(nn.AdaptiveAvgPool2d(1))
+            hier_bn_neck_list.append(BN_Neck(self.HIER_DIM[i]))
+            hier_classifier_list.append(Linear_Classifier(self.HIER_DIM[i], num_pid))
+        self.hier_pool_list = hier_pool_list
+        self.hier_bn_neck_list = hier_bn_neck_list
+        self.hier_classifier_list = hier_classifier_list
+
     def heatmap(self, img):
         B, C, H, W = img.shape
         res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap = self.backbone(img)
