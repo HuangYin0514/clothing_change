@@ -39,17 +39,35 @@ class Backbone_R50(nn.Module):
         self.act = nn.ReLU()
 
     def forward(self, img):
+        # Layer 0
         out = self.layer0(img)
         res0_featmap = out
+
+        # Layer 1
         out = self.layer1(out)
-        out = self.hge_res1(out)
+        hge1_out = self.hge_res1(out)
+        hge1_out = self.bn_res1(hge1_out)
+        hge1_out = self.act(hge1_out)
+        out = out + hge1_out
         res1_featmap = out
+
+        # Layer 2
         out = self.layer2(out)
-        out = self.hge_res2(out)
+        hge2_out = self.hge_res2(out)
+        hge2_out = self.bn_res2(hge2_out)
+        hge2_out = self.act(hge2_out)
+        out = out + hge2_out
         res2_featmap = out
+
+        # Layer 3
         out = self.layer3(out)
-        out = self.hge_res3(out)
+        hge3_out = self.hge_res3(out)
+        hge3_out = self.bn_res3(hge3_out)
+        hge3_out = self.act(hge3_out)
+        out = out + hge3_out
         res3_featmap = out
+
+        # Layer 4
         out = self.layer4(out)
         res4_featmap = out
 
