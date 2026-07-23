@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from .layer import BN_Neck, GeneralizedMeanPoolingP, Linear_Classifier
 from .net import resnet50, resnet50_ibn_a
+from .process import HGE
 
 
 # Backbone_R50 ------------------------------
@@ -28,14 +29,26 @@ class Backbone_R50(nn.Module):
         self.layer3 = resnet.layer3  # 6 blocks
         self.layer4 = resnet.layer4  # 3 blocks
 
+        self.hge_res1 = HGE(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1)
+        self.bn_res1 = nn.BatchNorm2d(256)
+        self.hge_res2 = HGE(in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.bn_res2 = nn.BatchNorm2d(512)
+        self.hge_res3 = HGE(in_channels=1024, out_channels=1024, kernel_size=3, stride=1, padding=1)
+        self.bn_res3 = nn.BatchNorm2d(1024)
+
+        self.act = nn.ReLU()
+
     def forward(self, img):
         out = self.layer0(img)
         res0_featmap = out
         out = self.layer1(out)
+        out = self.hge_res1(out)
         res1_featmap = out
         out = self.layer2(out)
+        out = self.hge_res2(out)
         res2_featmap = out
         out = self.layer3(out)
+        out = self.hge_res3(out)
         res3_featmap = out
         out = self.layer4(out)
         res4_featmap = out
