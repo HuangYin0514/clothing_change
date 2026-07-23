@@ -32,7 +32,7 @@ class HGE(nn.Module):
         # print(w1)
         # 复制第一行的权重到第三行并取相反数
         b, c, h, w = self.weight.size()
-        weight = self.weight.clone()
+        weight = self.weight
 
         Sob0 = weight[:, :, 0, 0]
         Sob45 = weight[:, :, 0, 1]
