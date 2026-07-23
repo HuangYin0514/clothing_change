@@ -41,7 +41,7 @@ class HGE(nn.Module):
 
         GL = weight[:, :, 2, 2]
 
-        weight_0 = torch.zeros(b, c, h, w)
+        weight_0 = torch.zeros(b, c, h, w, device=x.device)
 
         weight_0[:, :, 0, 0] = Sob0
         weight_0[:, :, 0, 1] = Sob0 * 2
@@ -54,7 +54,7 @@ class HGE(nn.Module):
         weight_0[:, :, 2, 2] = -Sob0
         x_0 = F.conv2d(x, weight_0, stride=self.stride, padding=self.padding)
 
-        weight_45 = torch.zeros(b, c, h, w)
+        weight_45 = torch.zeros(b, c, h, w, device=x.device)
         # weight_45=torch.zeros(b,c,h,w)
         weight_45[:, :, 0, 0] = 2 * Sob45
         weight_45[:, :, 0, 1] = Sob45
@@ -67,7 +67,7 @@ class HGE(nn.Module):
         weight_45[:, :, 2, 2] = -Sob45 * 2
         x_45 = F.conv2d(x, weight_45, stride=self.stride, padding=self.padding)
 
-        weight_90 = torch.zeros(b, c, h, w)
+        weight_90 = torch.zeros(b, c, h, w, device=x.device)
         weight_90[:, :, 0, 0] = Sob90
         weight_90[:, :, 0, 1] = 0
         weight_90[:, :, 0, 2] = -Sob90
@@ -79,7 +79,7 @@ class HGE(nn.Module):
         weight_90[:, :, 2, 2] = -Sob90
         x_90 = F.conv2d(x, weight_90, stride=self.stride, padding=self.padding)
 
-        weight_135 = torch.zeros(b, c, h, w)
+        weight_135 = torch.zeros(b, c, h, w, device=x.device)
         weight_135[:, :, 0, 0] = 0
         weight_135[:, :, 0, 1] = -Sob135
         weight_135[:, :, 0, 2] = -Sob135 * 2
@@ -96,7 +96,7 @@ class HGE(nn.Module):
         a3 = -a1 / 16
 
         # kernel_Gaussian_Laplacian=torch.zeros(b,c,5,5)
-        kernel_Gaussian_Laplacian = torch.zeros(b, c, 5, 5)
+        kernel_Gaussian_Laplacian = torch.zeros(b, c, 5, 5, device=x.device)
         kernel_Gaussian_Laplacian[:, :, 0, 2] = a3
         kernel_Gaussian_Laplacian[:, :, 1, 1] = a3
         kernel_Gaussian_Laplacian[:, :, 1, 2] = a2
