@@ -1,4 +1,4 @@
-# Hybrid Gradient Enhancement Module
+# Hybrid Gradient Enhancement Module 优化版
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,6 +13,7 @@ class HGE(nn.Module):
         self.kernel_size = kernel_size
         self.stride = stride
         self.padding = padding
+        self.padding_log = 2
 
         self.fc = nn.Conv2d(out_channels * 5, out_channels, kernel_size=1, stride=1, padding=0, bias=True)
 
@@ -20,61 +21,51 @@ class HGE(nn.Module):
         self.weight = nn.Parameter(torch.empty(out_channels, in_channels, kernel_size, kernel_size))
         nn.init.xavier_uniform_(self.weight)
 
-        # 预定义固定3×3方向模板
+        # 固定方向模板 register_buffer
         self.register_buffer("template_0", torch.tensor([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=torch.float32))
-
         self.register_buffer("template_45", torch.tensor([[2, 1, 0], [1, 0, -1], [0, -1, -2]], dtype=torch.float32))
-
         self.register_buffer("template_90", torch.tensor([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=torch.float32))
-
         self.register_buffer("template_135", torch.tensor([[0, -1, -2], [1, 0, -1], [2, 1, 0]], dtype=torch.float32))
 
-        # LoG 5×5 位置系数模板
-        self.register_buffer("template_log", torch.zeros((5, 5), dtype=torch.float32))
-        # a3 positions
-        self.template_log[[0, 1, 1, 2, 2, 3, 3, 4], [2, 1, 3, 0, 4, 1, 3, 2]] = 1.0
-        # a2 positions
-        self.template_log[[1, 2, 2, 3], [2, 1, 3, 2]] = 2.0
-        # a1 position
-        self.template_log[2, 2] = 4.0
+        # LoG mask 预计算，不再forward内求mask
+        template_log = torch.zeros((5, 5), dtype=torch.float32)
+        template_log[[0, 1, 1, 2, 2, 3, 3, 4], [2, 1, 3, 0, 4, 1, 3, 2]] = 1.0
+        template_log[[1, 2, 2, 3], [2, 1, 3, 2]] = 2.0
+        template_log[2, 2] = 4.0
+        self.register_buffer("template_log", template_log)
+        self.register_buffer("mask_a1", (template_log == 4.0))
+        self.register_buffer("mask_a2", (template_log == 2.0))
+        self.register_buffer("mask_a3", (template_log == 1.0))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        device = x.device
+        B, C, H, W = x.shape
+        out_c = self.out_channels
 
-        # 提取4方向 + GL缩放系数 [out_c, in_c, 1, 1]
+        # 提取缩放系数 [out_c, in_c, 1, 1]
         sob0 = self.weight[:, :, 0, 0].unsqueeze(-1).unsqueeze(-1)
         sob45 = self.weight[:, :, 0, 1].unsqueeze(-1).unsqueeze(-1)
         sob90 = self.weight[:, :, 0, 2].unsqueeze(-1).unsqueeze(-1)
         sob135 = self.weight[:, :, 1, 0].unsqueeze(-1).unsqueeze(-1)
         gl_coeff = self.weight[:, :, 2, 2].unsqueeze(-1).unsqueeze(-1)
 
-        # 四路Sobel卷积核 [out_c, in_c, 3,3]
-        weight_0 = sob0 * self.template_0
-        weight_45 = sob45 * self.template_45
-        weight_90 = sob90 * self.template_90
-        weight_135 = sob135 * self.template_135
+        # ---------------- 4路Sobel 3x3核 ----------------
+        w0 = sob0 * self.template_0
+        w45 = sob45 * self.template_45
+        w90 = sob90 * self.template_90
+        w135 = sob135 * self.template_135
 
-        x0 = F.conv2d(x, weight_0, stride=self.stride, padding=self.padding)
-        x45 = F.conv2d(x, weight_45, stride=self.stride, padding=self.padding)
-        x90 = F.conv2d(x, weight_90, stride=self.stride, padding=self.padding)
-        x135 = F.conv2d(x, weight_135, stride=self.stride, padding=self.padding)
+        # 4路合并卷积核 [4*out_c, in_c, 3,3]
+        w_sobel = torch.cat([w0, w45, w90, w135], dim=0)
+        feat_sobel = F.conv2d(x, w_sobel, stride=self.stride, padding=self.padding)
+        # feat_sobel: [B,4Oc,H,W] 拆分成4个分支
+        x0, x45, x90, x135 = feat_sobel.chunk(4, dim=1)
 
-        # ====================== 修复LoG卷积核构建 ======================
-        # a1 = gl*4, a2 = -a1/8, a3 = -a1/16
-        # template_log中：4→a1，2→a2，1→a3
+        # ---------------- LoG 5x5核 ----------------
         a1 = gl_coeff * 4.0
         a2 = -a1 / 8.0
         a3 = -a1 / 16.0
-
-        # 构建 [out_c,in_c,5,5] LoG kernel，利用广播
-        log_kernel = torch.zeros_like(self.template_log, device=device)
-        mask_a1 = self.template_log == 4.0
-        mask_a2 = self.template_log == 2.0
-        mask_a3 = self.template_log == 1.0
-
-        log_kernel = mask_a1 * a1 + mask_a2 * a2 + mask_a3 * a3
-
-        x_gl = F.conv2d(x, log_kernel, stride=self.stride, padding=2)
+        log_kernel = self.mask_a1 * a1 + self.mask_a2 * a2 + self.mask_a3 * a3
+        x_gl = F.conv2d(x, log_kernel, stride=self.stride, padding=self.padding_log)
 
         concat_feat = torch.cat([x0, x45, x90, x135, x_gl], dim=1)
         out = self.fc(concat_feat)
