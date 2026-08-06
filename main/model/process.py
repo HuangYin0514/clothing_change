@@ -9,7 +9,9 @@ class FrequencyDecoupleModule(nn.Module):
     保留身份边缘并重构空域净特征。
     """
 
-    def __init__(self, in_channels):
+    def __init__(self, in_channels, shape):
+        h, w = shape
+
         super().__init__()
         self.mask_generator = nn.Sequential(
             nn.Conv2d(in_channels, in_channels // 4, kernel_size=1),
@@ -19,9 +21,12 @@ class FrequencyDecoupleModule(nn.Module):
             nn.Sigmoid(),
         )
 
+        self.fft = lambda x: torch.fft.fftshift(torch.fft.rfft2(x, norm="ortho"), dim=(-2))
+        self.ifft = lambda x: torch.fft.irfft2(torch.fft.ifftshift(x, dim=(-2)), s=(h, w), norm="ortho")
+
     def forward(self, x):
         # 1. 2D 快速傅里叶变换 (FFT) 正向变换
-        fft_x = torch.fft.fft2(x, dim=(-2, -1), norm="ortho")
+        fft_x = self.fft(x)
         amplitude = torch.abs(fft_x)
 
         # 2. 从幅值谱学习自适应频域掩膜
@@ -31,7 +36,7 @@ class FrequencyDecoupleModule(nn.Module):
         fft_clean = fft_x * mask
 
         # 4. 逆傅里叶变换 (IFFT) 重构空域净特征
-        x_clean = torch.fft.ifft2(fft_clean, dim=(-2, -1), norm="ortho").real
+        x_clean = self.ifft(fft_clean)
         return x_clean + x
 
 
@@ -40,6 +45,6 @@ class FrequencyDecoupleModule(nn.Module):
 # =====================================================================
 if __name__ == "__main__":
     inputs = torch.randn(2, 2048, 16, 8)  # 模拟输入特征图
-    model = FrequencyDecoupleModule(in_channels=2048)
+    model = FrequencyDecoupleModule(in_channels=2048, shape=(16, 8))  # 初始化模块
     outputs = model(inputs)
     print(outputs.shape)  # 输出特征图形状
