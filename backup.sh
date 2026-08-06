@@ -1,7 +1,7 @@
 ####################################
 # git
 ####################################
-VERSION_NAME="Baseline"
+VERSION_NAME="FD"
 
 git status # 查看状态
 git add . # 添加所有修改
