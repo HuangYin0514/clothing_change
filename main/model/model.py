@@ -31,13 +31,29 @@ class Backbone_R50(nn.Module):
     def forward(self, img):
         out = self.layer0(img)
         res0_featmap = out
-        out = self.layer1(out)
+
+        out = self.layer1[0](out)
+        out = self.layer1[1](out)
+        out = self.layer1[2](out)
         res1_featmap = out
-        out = self.layer2(out)
+
+        out = self.layer2[0](out)
+        out = self.layer2[1](out)
+        out = self.layer2[2](out)
+        out = self.layer2[3](out)
         res2_featmap = out
-        out = self.layer3(out)
+
+        out = self.layer3[0](out)
+        out = self.layer3[1](out)
+        out = self.layer3[2](out)
+        out = self.layer3[3](out)
+        out = self.layer3[4](out)
+        out = self.layer3[5](out)
         res3_featmap = out
-        out = self.layer4(out)
+
+        out = self.layer4[0](out)
+        out = self.layer4[1](out)
+        out = self.layer4[2](out)
         res4_featmap = out
 
         return res0_featmap, res1_featmap, res2_featmap, res3_featmap, res4_featmap
