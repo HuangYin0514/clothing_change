@@ -30,7 +30,7 @@ class Backbone_R50(nn.Module):
         self.layer4 = resnet.layer4  # 3 blocks
 
         self.fd_l2 = FrequencyDecoupleModule(in_channels=512)
-        self.fd_l3 = FrequencyDecoupleModule(in_channels=1024)
+        # self.fd_l3 = FrequencyDecoupleModule(in_channels=1024)
 
     def forward(self, img):
         out = self.layer0(img)
@@ -54,7 +54,7 @@ class Backbone_R50(nn.Module):
         out = self.layer3[3](out)
         out = self.layer3[4](out)
         out = self.layer3[5](out)
-        out = self.fd_l3(out)
+        # out = self.fd_l3(out)
         res3_featmap = out
 
         out = self.layer4[0](out)
