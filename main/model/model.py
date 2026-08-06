@@ -29,8 +29,8 @@ class Backbone_R50(nn.Module):
         self.layer3 = resnet.layer3  # 6 blocks
         self.layer4 = resnet.layer4  # 3 blocks
 
-        self.fd_l2 = FrequencyDecoupleModule(in_channels=512, shape=(48, 24))
-        # self.fd_l3 = FrequencyDecoupleModule(in_channels=1024, shape=(24, 12))
+        self.fd_l2 = FrequencyDecoupleModule(in_channels=512)
+        # self.fd_l3 = FrequencyDecoupleModule(in_channels=1024)
 
     def forward(self, img):
         out = self.layer0(img)
