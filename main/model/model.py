@@ -24,10 +24,10 @@ class Backbone_R50(nn.Module):
         # Backbone structure
         self.layer0 = nn.Sequential(resnet.conv1, resnet.bn1, resnet.relu, resnet.maxpool)
 
-        self.layer1 = resnet.layer1  # 3 blocks
-        self.layer2 = resnet.layer2  # 4 blocks
-        self.layer3 = resnet.layer3  # 6 blocks
-        self.layer4 = resnet.layer4  # 3 blocks
+        self.layer1 = resnet.layer1  # 3 blocks / 256, 96, 48
+        self.layer2 = resnet.layer2  # 4 blocks / 512, 48, 24
+        self.layer3 = resnet.layer3  # 6 blocks / 1024, 24, 12
+        self.layer4 = resnet.layer4  # 3 blocks / 2048, 24, 12
 
         self.fd_l2 = FrequencyDecoupleModule(shape=(512, 48, 24), ratio=0.2)
 
