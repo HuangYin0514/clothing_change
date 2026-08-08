@@ -3,7 +3,7 @@ import torch.nn as nn
 
 from .layer import BN_Neck, GeneralizedMeanPoolingP, Linear_Classifier
 from .net import resnet50, resnet50_ibn_a
-from .process import Pool_Attention
+from .process import FrequencyDecoupleModule
 
 
 # Backbone_R50 ------------------------------
@@ -29,8 +29,10 @@ class Backbone_R50(nn.Module):
         self.layer3 = resnet.layer3  # 6 blocks / 1024, 24, 12
         self.layer4 = resnet.layer4  # 3 blocks / 2048, 24, 12
 
-        self.pool_att_0 = Pool_Attention(pool_type="max", feature_dim=2048)
-        self.pool_att_1 = Pool_Attention(pool_type="avg", feature_dim=2048)
+        # self.pool_att_0 = Pool_Attention(pool_type="max", feature_dim=2048)
+        # self.pool_att_1 = Pool_Attention(pool_type="avg", feature_dim=2048)
+
+        self.fd_l2 = FrequencyDecoupleModule(shape=(1024, 24, 12), ratio=0.2)
 
     def forward(self, img):
         out = self.layer0(img)
@@ -53,12 +55,11 @@ class Backbone_R50(nn.Module):
         out = self.layer3[3](out)
         out = self.layer3[4](out)
         out = self.layer3[5](out)
+        out = self.fd_l2(out)
         res3_featmap = out
 
         out = self.layer4[0](out)
-        out = self.pool_att_0(out)
         out = self.layer4[1](out)
-        out = self.pool_att_1(out)
         out = self.layer4[2](out)
         res4_featmap = out
 
