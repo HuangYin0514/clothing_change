@@ -32,7 +32,8 @@ class Backbone_R50(nn.Module):
         # self.pool_att_0 = Pool_Attention(pool_type="max", feature_dim=2048)
         # self.pool_att_1 = Pool_Attention(pool_type="avg", feature_dim=2048)
 
-        self.fd_l2 = FrequencyDecoupleModule(shape=(1024, 24, 12), ratio=0.2)
+        self.fd_l2 = FrequencyDecoupleModule(shape=(512, 48, 24), ratio=0.2)
+        self.fd_l3 = FrequencyDecoupleModule(shape=(1024, 24, 12), ratio=0.2)
 
     def forward(self, img):
         out = self.layer0(img)
@@ -47,6 +48,7 @@ class Backbone_R50(nn.Module):
         out = self.layer2[1](out)
         out = self.layer2[2](out)
         out = self.layer2[3](out)
+        out = self.fd_l2(out)
         res2_featmap = out
 
         out = self.layer3[0](out)
@@ -55,7 +57,7 @@ class Backbone_R50(nn.Module):
         out = self.layer3[3](out)
         out = self.layer3[4](out)
         out = self.layer3[5](out)
-        out = self.fd_l2(out)
+        out = self.fd_l3(out)
         res3_featmap = out
 
         out = self.layer4[0](out)
