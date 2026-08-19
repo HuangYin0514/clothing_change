@@ -14,9 +14,11 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
             B, C, H, W = img.size()
             total_loss = 0
 
-            backbone_feat_map, global_feat, global_bn_feat = reid_net(img)
+            outputs = reid_net(img)
 
             # Global
+            global_feat = reid_net.module.global_pool(outputs["res4_featmap"]).view(B, -1)
+            global_bn_feat = reid_net.module.global_bn_neck(global_feat)
             global_cls_score = reid_net.module.global_classifier(global_bn_feat)
             global_id_loss = criterion.ce_ls(global_cls_score, pid)
             meter.update({"global_id_loss": global_id_loss.item()})

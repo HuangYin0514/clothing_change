@@ -13,23 +13,19 @@ class Logger:
         self.file_path = str(log_path / name)
 
         # 分布式多进程控制
-        self.accelerator = accelerator
         self.is_main = True
-        if self.accelerator is not None:
-            self.is_main = self.accelerator.is_main_process
+        self.set_accelerator(accelerator)
 
         # wandb 相关缓存变量
-        self.wandb_api_key = None
-        self.wandb_entity = None
-        self.wandb_config = None  # 存储task配置对象
-        self._wandb_inited = False  # 标记是否已初始化wandb
+        self._wandb_inited = False
 
         self.clear()
 
     def set_accelerator(self, accelerator):
         """动态绑定accelerator"""
-        self.accelerator = accelerator
-        self.is_main = self.accelerator.is_main_process
+        if accelerator is not None:
+            self.accelerator = accelerator
+            self.is_main = self.accelerator.is_main_process
 
     def wandb_start(self, api_key, entity, task_config):
         """
@@ -46,10 +42,6 @@ class Logger:
             return
 
         # 登录wandb
-        self.wandb_api_key = api_key
-        self.wandb_entity = entity
-        self.wandb_config = task_config
-
         settings = wandb.Settings(silent=True, show_info=False, show_warnings=False, show_errors=True)
         wandb.login(key=api_key, relogin=True)
         wandb.init(
