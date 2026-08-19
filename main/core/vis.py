@@ -3,9 +3,9 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import reid
 import torch
 import util
+from reid import evaluate_ltcc
 
 from .test import get_data, get_distmat
 
@@ -124,7 +124,7 @@ def visualization_rank(config, reid_net, train_loader, query_loader, gallery_loa
             gf, g_pids, g_camids, g_clothids = get_data(gallery_loader, reid_net, device)
         distmat = get_distmat(qf, gf, dist="cosine")
 
-        CMC_CC, mAP_CC = reid.evaluate_ltcc(distmat, q_pids, g_pids, q_camids, g_camids, q_clothids, g_clothids, ltcc_cc_setting=True)
+        CMC_CC, mAP_CC = evaluate_ltcc(distmat, q_pids, g_pids, q_camids, g_camids, q_clothids, g_clothids, ltcc_cc_setting=True)
         logger(f"CC mode | mAP: {mAP_CC :.2f}% | R-1: {CMC_CC[0] :.2f}% | Top20 CMC: {CMC_CC[:20]}")
 
     query_set, gallery_set = query_loader.dataset, gallery_loader.dataset
