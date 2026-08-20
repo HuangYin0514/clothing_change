@@ -92,6 +92,15 @@ class ReID_Net(nn.Module):
         self.global_bn_neck = BN_Neck(2048)
         self.global_classifier = Linear_Classifier(2048, num_pid)
 
+        # ------------- Hierarchical -----------------------
+        self.l2_pool = GeneralizedMeanPoolingP()
+        self.l2_bn_neck = BN_Neck(512)
+        self.l2_classifier = Linear_Classifier(512, num_pid)
+
+        self.l3_pool = GeneralizedMeanPoolingP()
+        self.l3_bn_neck = BN_Neck(1024)
+        self.l3_classifier = Linear_Classifier(1024, num_pid)
+
     def heatmap(self, img):
         B, C, H, W = img.shape
         outputs = self.backbone(img)
