@@ -3,7 +3,6 @@ import torch.nn as nn
 
 from .layer import BN_Neck, GeneralizedMeanPoolingP, Linear_Classifier
 from .net import resnet50, resnet50_ibn_a
-from .process import FrequencyDecoupleModule, SpatialFrequencyLocalAlignment
 
 
 # Backbone_R50 ------------------------------
