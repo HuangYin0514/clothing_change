@@ -90,7 +90,7 @@ class SpatialFrequencyLocalAlignment(nn.Module):
         freq_feat = self.subband_conv(wavelet_subbands)  # [B, C, H/2, W/2]
 
         # 2. 将空间特征下采样对齐尺寸
-        spatial_down = F.interpolate(x_spatial, size=(H // 2, W // 2), mode="nearest", align_corners=False)
+        spatial_down = F.interpolate(x_spatial, size=(H // 2, W // 2), mode="nearest")
 
         # 3. 空间-频域交叉注意力计算
         proj_query = self.query_conv(spatial_down).view(B, -1, (H // 2) * (W // 2)).permute(0, 2, 1)  # [B, N, C']
@@ -103,7 +103,7 @@ class SpatialFrequencyLocalAlignment(nn.Module):
         out = out.view(B, C, H // 2, W // 2)
 
         # 4. 残差连接与尺寸还原
-        aligned_feat = x_spatial + self.gamma * F.interpolate(out, size=(H, W), mode="nearest", align_corners=False)
+        aligned_feat = x_spatial + self.gamma * F.interpolate(out, size=(H, W), mode="nearest")
         return aligned_feat
 
 
@@ -147,3 +147,31 @@ if __name__ == "__main__":
     model = SpatialFrequencyLocalAlignment(in_channels=2048)
     outputs = model(inputs)
     print(outputs.shape)  # 输出特征图形状
+
+    def set_seed(seed=42):
+        import random
+
+        import numpy as np
+
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+    def test_reproduce():
+        set_seed(42)
+        module = SpatialFrequencyLocalAlignment(in_channels=16)
+        x = torch.randn(2, 16, 64, 64)
+        out1 = module(x)
+
+        set_seed(42)
+        module2 = SpatialFrequencyLocalAlignment(in_channels=16)
+        module2.load_state_dict(module.state_dict())
+        out2 = module2(x)
+
+        print("max diff:", torch.max(torch.abs(out1 - out2)).item())
+
+    test_reproduce()
