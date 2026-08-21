@@ -90,7 +90,7 @@ class SpatialFrequencyLocalAlignment(nn.Module):
         freq_feat = self.subband_conv(wavelet_subbands)  # [B, C, H/2, W/2]
 
         # 2. 将空间特征下采样对齐尺寸
-        spatial_down = F.interpolate(x_spatial, size=(H // 2, W // 2), mode="bilinear", align_corners=False)
+        spatial_down = F.interpolate(x_spatial, size=(H // 2, W // 2), mode="nearest", align_corners=False)
 
         # 3. 空间-频域交叉注意力计算
         proj_query = self.query_conv(spatial_down).view(B, -1, (H // 2) * (W // 2)).permute(0, 2, 1)  # [B, N, C']
@@ -103,7 +103,7 @@ class SpatialFrequencyLocalAlignment(nn.Module):
         out = out.view(B, C, H // 2, W // 2)
 
         # 4. 残差连接与尺寸还原
-        aligned_feat = x_spatial + self.gamma * F.interpolate(out, size=(H, W), mode="bilinear", align_corners=False)
+        aligned_feat = x_spatial + self.gamma * F.interpolate(out, size=(H, W), mode="nearest", align_corners=False)
         return aligned_feat
 
 
