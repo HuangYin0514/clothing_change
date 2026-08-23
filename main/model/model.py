@@ -3,7 +3,11 @@ import torch.nn as nn
 
 from .layer import BN_Neck, GeneralizedMeanPoolingP, Linear_Classifier
 from .net import resnet50, resnet50_ibn_a
-from .process import FrequencyDecoupleModule, SpatialFrequencyLocalAlignment
+from .process import (
+    FrequencyDecoupleModule,
+    SpatialFrequencyLocalAlignment,
+    frequency_counterfactual_augmentation,
+)
 
 
 # Backbone_R50 ------------------------------
@@ -48,9 +52,14 @@ class Backbone_R50(nn.Module):
         out = self.layer2[1](out)
         out = self.layer2[2](out)
         out = self.layer2[3](out)
+        res2_featmap_pre = out
         out = self.fd_l2(out)
         out = self.sfla_l2(out)
         res2_featmap = out
+
+        res2_featmap_aug = frequency_counterfactual_augmentation(res2_featmap_pre)
+        res2_featmap_aug = self.fd_l2(res2_featmap_aug)
+        res2_featmap_aug = self.sfla_l2(res2_featmap_aug)
 
         out = self.layer3[0](out)
         out = self.layer3[1](out)
@@ -58,9 +67,14 @@ class Backbone_R50(nn.Module):
         out = self.layer3[3](out)
         out = self.layer3[4](out)
         out = self.layer3[5](out)
+        res3_featmap_pre = out
         out = self.fd_l3(out)
         out = self.sfla_l3(out)
         res3_featmap = out
+
+        res3_featmap_aug = frequency_counterfactual_augmentation(res3_featmap_pre)
+        res3_featmap_aug = self.fd_l3(res3_featmap_aug)
+        res3_featmap_aug = self.sfla_l3(res3_featmap_aug)
 
         out = self.layer4[0](out)
         out = self.layer4[1](out)
@@ -73,6 +87,8 @@ class Backbone_R50(nn.Module):
             "res2_featmap": res2_featmap,
             "res3_featmap": res3_featmap,
             "res4_featmap": res4_featmap,
+            "res2_featmap_aug": res2_featmap_aug,
+            "res3_featmap_aug": res3_featmap_aug,
         }
 
 
@@ -128,4 +144,6 @@ class ReID_Net(nn.Module):
             "res2_featmap": outputs["res2_featmap"],
             "res3_featmap": outputs["res3_featmap"],
             "res4_featmap": outputs["res4_featmap"],
+            "res2_featmap_aug": outputs["res2_featmap_aug"],
+            "res3_featmap_aug": outputs["res3_featmap_aug"],
         }

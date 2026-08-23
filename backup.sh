@@ -1,7 +1,7 @@
 ####################################
 # git
 ####################################
-VERSION_NAME="FD_SFLA"
+VERSION_NAME="FD_SFLA_CF"
 
 
 git status # 查看状态
