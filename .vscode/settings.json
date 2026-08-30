@@ -2,7 +2,9 @@
   // 自动更新，配置无效，手动在设置中关闭
   "update.mode": "none",
   // 全局字体大小
-  "editor.fontSize": 13,
+  "editor.fontSize": 10,
+  // 全局缩放级别
+  "window.zoomLevel": -1,
   // 全局自动换行
   "editor.wordWrap": "off",
   // 右侧侧边栏略缩图
