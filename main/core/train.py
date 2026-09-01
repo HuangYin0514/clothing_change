@@ -43,12 +43,12 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
             total_loss += res3_id_loss
 
             # 频域损失
-            spectral_res2_loss = reid_net.module.sl(outputs["res2_featmap"], pid)
-            meter.update({"spectral_res2_loss": spectral_res2_loss.item()})
-            total_loss += 0.01 * spectral_res2_loss
-            spectral_res3_loss = reid_net.module.sl(outputs["res3_featmap"], pid)
-            meter.update({"spectral_res3_loss": spectral_res3_loss.item()})
-            total_loss += 0.01 * spectral_res3_loss
+            # spectral_res2_loss = reid_net.module.sl(outputs["res2_featmap"], pid)
+            # meter.update({"spectral_res2_loss": spectral_res2_loss.item()})
+            # total_loss += 0.01 * spectral_res2_loss
+            # spectral_res3_loss = reid_net.module.sl(outputs["res3_featmap"], pid)
+            # meter.update({"spectral_res3_loss": spectral_res3_loss.item()})
+            # total_loss += 0.01 * spectral_res3_loss
 
             optimizer.zero_grad()
             accelerator.backward(total_loss)
