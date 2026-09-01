@@ -42,16 +42,13 @@ def train(config, reid_net, train_loader, criterion, optimizer, scheduler, devic
             meter.update({"res3_id_loss": res3_id_loss.item()})
             total_loss += res3_id_loss
 
-            # 反事实换衣特征
-            global_feat = reid_net.module.global_pool(outputs["res4_featmap_aug"]).view(B, -1)
-            global_bn_feat = reid_net.module.global_bn_neck(global_feat)
-            global_cls_score = reid_net.module.global_classifier(global_bn_feat)
-            global_id_loss = criterion.ce_ls(global_cls_score, pid)
-            meter.update({"global_aug_id_loss": global_id_loss.item()})
-            total_loss += global_id_loss
-            global_tri_loss = criterion.tri(global_feat, pid)
-            meter.update({"global_aug_tri_loss": global_tri_loss.item()})
-            total_loss += global_tri_loss
+            # 频域损失
+            spectral_res2_loss = reid_net.module.sl(outputs["res2_featmap"], pid)
+            meter.update({"spectral_res2_loss": spectral_res2_loss.item()})
+            total_loss += 0.01 * spectral_res2_loss
+            spectral_res3_loss = reid_net.module.sl(outputs["res3_featmap"], pid)
+            meter.update({"spectral_res3_loss": spectral_res3_loss.item()})
+            total_loss += 0.01 * spectral_res3_loss
 
             optimizer.zero_grad()
             accelerator.backward(total_loss)

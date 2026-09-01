@@ -6,7 +6,7 @@ from .net import resnet50, resnet50_ibn_a
 from .process import (
     FrequencyDecoupleModule,
     SpatialFrequencyLocalAlignment,
-    frequency_counterfactual_augmentation,
+    SpectraltLoss,
 )
 
 
@@ -105,8 +105,8 @@ class ReID_Net(nn.Module):
         self.l3_bn_neck = BN_Neck(1024)
         self.l3_classifier = Linear_Classifier(1024, num_pid)
 
-        # ------------- Counterfactual Augmentation -----------------------
-        self.aug = frequency_counterfactual_augmentation
+        # ------------- Spectralt Loss  -----------------------
+        self.sl = SpectraltLoss()
 
     def heatmap(self, img):
         B, C, H, W = img.shape
@@ -118,9 +118,6 @@ class ReID_Net(nn.Module):
 
         # ------------- Backbone -----------------------
         outputs = self.backbone(img)
-
-        img_aug = self.aug(img)
-        outputs_aug = self.backbone(img_aug)
 
         if not self.training:
             eval_feat_meter = []
@@ -138,5 +135,4 @@ class ReID_Net(nn.Module):
             "res2_featmap": outputs["res2_featmap"],
             "res3_featmap": outputs["res3_featmap"],
             "res4_featmap": outputs["res4_featmap"],
-            "res4_featmap_aug": outputs_aug["res4_featmap"],
         }

@@ -107,50 +107,30 @@ class SpatialFrequencyLocalAlignment(nn.Module):
         return aligned_feat
 
 
-# =====================================================================
-# 3. 频域反事实数据增强 (FCA) 与身份一致性损失 (CIL)
-#    解决痛点 3：换衣导致的频域特征分布偏移
-# =====================================================================
-def frequency_counterfactual_augmentation(x):
-    """
-    频域反事实增强：在 Batch 维内打乱幅值谱（衣服/风格），保持相位谱（身份）不变，
-    伪造“换衣后”的同人图像特征。
-    """
-    B, C, H, W = x.shape
-    fft_feat = torch.fft.rfft2(x, dim=(-2, -1), norm="ortho")
-    mag = torch.abs(fft_feat)
-    phase = torch.angle(fft_feat)
+class SpectraltLoss(nn.Module):
+    def __init__(self):
+        super().__init__()
 
-    # Batch 维度随机打乱，混合不同行人的衣服幅值谱
-    rand_idx = torch.randperm(B)
-    mag_swapped = mag[rand_idx]
+    def forward(self, feat, pids):
+        """
+        feat: [B, C, H, W]
+        pids: [B] (行人ID)
+        """
+        fft_x = torch.fft.rfft2(feat, dim=(-2, -1), norm="ortho")
+        phase = torch.angle(fft_x)
 
-    # 将 Person B 的衣服幅值与 Person A 的身份相位拼合
-    counterfactual_fft = torch.polar(mag_swapped, phase)
+        B = phase.shape[0]
+        p_flat = phase.view(B, -1)
 
-    x_counterfactual = torch.fft.irfft2(counterfactual_fft, s=(H, W), dim=(-2, -1), norm="ortho")
-    return x_counterfactual
+        # 构建 Pairwise 行人标签矩阵
+        pid_eq = pids.unsqueeze(1) == pids.unsqueeze(0)
 
+        # 1. 跨衣物相位相干性损失 (Phase Consistency Loss)
+        phase_sim = F.cosine_similarity(p_flat.unsqueeze(1), p_flat.unsqueeze(0), dim=2)
+        loss_phase = (1.0 - phase_sim)[pid_eq].mean()
 
-class ClothInvariantLoss(nn.Module):
-    """
-    身份一致性损失：约束原始特征与反事实（换衣）特征在度量空间上的距离极小，
-    同时使特征与衣服幅值谱互信息极小化。
-    """
-
-    def __init__(self, margin=0.3):
-        super(ClothInvariantLoss, self).__init__()
-        self.ranking_loss = nn.MarginRankingLoss(margin=margin)
-
-    def forward(self, feat_orig, feat_cf, labels):
-        # 1. 原始特征与反事实换衣特征的一致性 MSE 损失
-        loss_consist = F.mse_loss(feat_orig, feat_cf)
-
-        # 2. 余弦相似度约束
-        sim = F.cosine_similarity(feat_orig, feat_cf, dim=1)
-        loss_sim = torch.mean(1.0 - sim)
-
-        return loss_consist + loss_sim
+        total_spectral_loss = loss_phase
+        return total_spectral_loss
 
 
 if __name__ == "__main__":
@@ -165,5 +145,6 @@ if __name__ == "__main__":
     print(outputs.shape)  # 输出特征图形状
 
     inputs = torch.randn(2, 2048, 16, 8)  # 模拟输入特征图
-    outputs = frequency_counterfactual_augmentation(inputs)
-    print(outputs.shape)  # 输出特征图形状
+    pids = torch.tensor([0, 1])  # 模拟行人ID
+    outputs = SpectraltLoss()(inputs, pids)
+    print(outputs)  # 输出特征图形状
