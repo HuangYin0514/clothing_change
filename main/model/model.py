@@ -90,9 +90,6 @@ class ReID_Net(nn.Module):
         self.l3_bn_neck = BN_Neck(1024)
         self.l3_classifier = Linear_Classifier(1024, num_pid)
 
-        # ------------- Spectralt Loss  -----------------------
-        self.sl = SpectraltLoss()
-
     def heatmap(self, img):
         B, C, H, W = img.shape
         outputs = self.backbone(img)
