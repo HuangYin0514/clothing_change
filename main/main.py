@@ -120,7 +120,7 @@ if __name__ == "__main__":
     logger = util.Logger(path_dir=Path(config.SAVE.OUTPUT_PATH) / "logs", name="train_logger.log", accelerator=accelerator)
 
     # 设置Wandb
-    WANDB_KEY = "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"
+    WANDB_KEY = "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"
     logger.wandb_start(api_key=WANDB_KEY, entity="yinhuang-team-projects", task_config=config.TASK)
 
     # 打印信息
