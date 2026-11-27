@@ -24,19 +24,13 @@ class FrequencyDecoupleModule(nn.Module):
     def forward(self, x):
         B, C, H, W = x.shape
 
-        # 1. 2D 实数 FFT
+        # 1. 在频域中，对振幅施加掩模
         fft_x = torch.fft.rfft2(x, dim=(-2, -1), norm="ortho")
         amplitude = torch.abs(fft_x)
         phase = torch.angle(fft_x)
-
-        # 2. 自适应掩膜生成
         dynamic_mask = self.freq_attn(amplitude)
-
-        # 3. 幅值抑制与复数重构
         amp_clean = amplitude * dynamic_mask
         fft_clean = torch.polar(amp_clean, phase)
-
-        # 4. 逆傅里叶变换重构
         x_freq_filtered = torch.fft.irfft2(fft_clean, s=(H, W), dim=(-2, -1), norm="ortho")
 
         # 5. 带有可学习权重的特征融合
