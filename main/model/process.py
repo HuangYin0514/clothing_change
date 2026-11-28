@@ -3,38 +3,58 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+class ChannelPool(nn.Module):
+    def forward(self, x):
+        return torch.cat((torch.max(x, 1)[0].unsqueeze(1), torch.mean(x, 1).unsqueeze(1)), dim=1)
+
+
 class FrequencyDecoupleModule(nn.Module):
 
     def __init__(self, in_channels, reduction=4):
         super().__init__()
         self.in_channels = in_channels
 
-        # 提取频域下的全局特征上下文
-        self.freq_attn = nn.Sequential(
-            nn.Conv2d(in_channels, in_channels // reduction, kernel_size=1),
-            nn.BatchNorm2d(in_channels // reduction),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(in_channels // reduction, in_channels, kernel_size=1),
-            nn.Sigmoid(),
+        # 处理频域中通道特征信息
+        self.process_channel = nn.Sequential(
+            nn.Conv2d(in_channels, in_channels, 1, 1, 0),
+            nn.GELU(),
+            nn.Conv2d(in_channels, in_channels, 1, 1, 0),
         )
 
-        # 可学习可调残差权重，初始接近于 0
-        self.gamma = nn.Parameter(torch.zeros(1))
+        # 处理频域中空间特征信息
+        self.spatial_pool = nn.Sequential(
+            *[
+                ChannelPool(),
+                nn.Conv2d(2, 1, 3, 1, 1),
+            ]
+        )
+        self.process_spatial = nn.Sequential(
+            nn.Conv2d(1, 1, 1, 1, 0),
+            nn.GELU(),
+            nn.Conv2d(1, 1, 1, 1, 0),
+        )
 
     def forward(self, x):
         B, C, H, W = x.shape
 
-        # 1. 在频域中，对振幅施加掩模
-        fft_x = torch.fft.rfft2(x, dim=(-2, -1), norm="ortho")
-        amplitude = torch.abs(fft_x)
-        phase = torch.angle(fft_x)
-        dynamic_mask = self.freq_attn(amplitude)
-        amp_clean = amplitude * dynamic_mask
-        fft_clean = torch.polar(amp_clean, phase)
-        x_freq_filtered = torch.fft.irfft2(fft_clean, s=(H, W), dim=(-2, -1), norm="ortho")
+        # 分支1：处理频域中通道特征信息
+        x_fft = torch.fft.rfft2(x, dim=(-2, -1), norm="ortho")
+        amplitude = torch.abs(x_fft)
+        phase = torch.angle(x_fft)
+        amplitude_channel = self.process_channel(amplitude)
+        x_fft_new = torch.polar(amplitude_channel, phase)
+        out_1 = torch.fft.irfft2(x_fft_new, s=(H, W), dim=(-2, -1), norm="ortho")
 
-        # 5. 带有可学习权重的特征融合
-        return x + self.gamma * x_freq_filtered
+        # 分支2：处理频域中空间特征信息
+        x_pool = self.spatial_pool(x)  # [b,1,h,w]
+        x_pool_fft = torch.fft.rfft2(x_pool, dim=(-2, -1), norm="ortho")
+        x_pool_fft_amp = torch.abs(x_pool_fft)
+        x_pool_fft_pha = torch.angle(x_pool_fft)
+        x_pool_fft_amp_spa = self.process_spatial(x_pool_fft_amp)
+        x_pool_fft_new = torch.polar(x_pool_fft_amp_spa, x_pool_fft_pha)
+        out_2 = torch.fft.irfft2(x_pool_fft_new, s=(H, W), dim=(-2, -1), norm="ortho")
+
+        return out_1 * out_2
 
 
 class DWT2D(nn.Module):
@@ -133,12 +153,12 @@ if __name__ == "__main__":
     outputs = model(inputs)
     print(outputs.shape)  # 输出特征图形状
 
-    inputs = torch.randn(2, 2048, 16, 8)  # 模拟输入特征图
-    model = SpatialFrequencyLocalAlignment(in_channels=2048)
-    outputs = model(inputs)
-    print(outputs.shape)  # 输出特征图形状
+    # inputs = torch.randn(2, 2048, 16, 8)  # 模拟输入特征图
+    # model = SpatialFrequencyLocalAlignment(in_channels=2048)
+    # outputs = model(inputs)
+    # print(outputs.shape)  # 输出特征图形状
 
-    inputs = torch.randn(2, 2048, 16, 8)  # 模拟输入特征图
-    pids = torch.tensor([0, 1])  # 模拟行人ID
-    outputs = SpectraltLoss()(inputs, pids)
-    print(outputs)  # 输出特征图形状
+    # inputs = torch.randn(2, 2048, 16, 8)  # 模拟输入特征图
+    # pids = torch.tensor([0, 1])  # 模拟行人ID
+    # outputs = SpectraltLoss()(inputs, pids)
+    # print(outputs)  # 输出特征图形状
